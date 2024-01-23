@@ -8,5 +8,6 @@ import { Appointment } from './entities/appointment.entity'
   imports: [TypeOrmModule.forFeature([Appointment])],
   controllers: [AppointmentController],
   providers: [AppointmentService],
+  exports: [AppointmentService],
 })
 export class AppointmentModule {}
