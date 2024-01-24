@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module'
 import { DoctorScheduleModule } from './doctor-schedule/doctor-schedule.module'
 import { AppointmentModule } from './appointment/appointment.module'
 import { AuthcodeModule } from './authcode/authcode.module'
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthcodeModule } from './authcode/authcode.module'
     DoctorScheduleModule,
     AppointmentModule,
     AuthcodeModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
