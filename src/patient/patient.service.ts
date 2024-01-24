@@ -1,26 +1,60 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePatientDto } from './dto/create-patient.dto';
-import { UpdatePatientDto } from './dto/update-patient.dto';
+import { Injectable } from '@nestjs/common'
+import { CreatePatientDto } from './dto/create-patient.dto'
+import { UpdatePatientDto } from './dto/update-patient.dto'
+import { Repository } from 'typeorm'
+import { Patient } from './entities/patient.entity'
+import { InjectRepository } from '@nestjs/typeorm'
+import { formatPhoneNumber } from 'src/util/format-phone-number'
 
 @Injectable()
 export class PatientService {
-  create(createPatientDto: CreatePatientDto) {
-    return 'This action adds a new patient';
+  constructor(
+    @InjectRepository(Patient)
+    private patientRepo: Repository<Patient>
+  ) {}
+
+  async create({ firstName, lastName, phoneNumber }: CreatePatientDto) {
+    const patient = new Patient()
+
+    patient.firstName = firstName
+    patient.lastName = lastName
+    patient.phoneNumber = formatPhoneNumber(phoneNumber)
+
+    const result = await this.patientRepo.save(patient)
+
+    return result
   }
 
-  findAll() {
-    return `This action returns all patient`;
+  async findAll() {
+    const patients = await this.patientRepo.find()
+
+    return patients
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} patient`;
+  async findOne(id: number) {
+    const patient = await this.patientRepo.findOneBy({ id })
+
+    return patient
   }
 
-  update(id: number, updatePatientDto: UpdatePatientDto) {
-    return `This action updates a #${id} patient`;
+  async update(
+    id: number,
+    { firstName, lastName, phoneNumber }: UpdatePatientDto
+  ) {
+    const patient = await this.patientRepo.findOneBy({ id })
+
+    patient.firstName = firstName
+    patient.lastName = lastName
+    patient.phoneNumber = formatPhoneNumber(phoneNumber)
+
+    const result = await this.patientRepo.save(patient)
+
+    return result
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} patient`;
+  async remove(id: number) {
+    const result = await this.patientRepo.delete(id)
+
+    return result
   }
 }
