@@ -4,7 +4,7 @@ import { Authcode } from './entities/authcode.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/user/entities/user.entity'
 import { ConfigService } from '@nestjs/config'
-import { hash } from 'bcrypt'
+import { compare, hash } from 'bcrypt'
 
 @Injectable()
 export class AuthcodeService {
@@ -50,5 +50,14 @@ export class AuthcodeService {
     const result = await this.authcodeRepo.delete({ user })
 
     return result
+  }
+
+  async checkCodes(authcodes: Authcode[], code: string) {
+    for (let authcode of authcodes) {
+      if (await compare(code, authcode.code)) {
+        return true
+      }
+    }
+    return false
   }
 }
