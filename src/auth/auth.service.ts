@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { CreateUserDto } from 'src/user/dto/create-user.dto'
 import { SigninUserDto } from './dto/signin-user.dto'
 import { LoginUserDto } from './dto/login-user.dto'
@@ -10,6 +15,11 @@ import { Repository } from 'typeorm'
 import { formatPhoneNumber } from 'src/util/format-phone-number'
 import { compare, hash } from 'bcrypt'
 import { JwtService } from '@nestjs/jwt'
+import { generatePassword } from 'src/util/password_generator'
+import { generateCode } from 'src/util/generate-code'
+import { AuthcodeService } from 'src/authcode/authcode.service'
+import { sendAuthCodeByEmail } from 'src/util/email-sender'
+import { sendAuthCodeBySMS } from 'src/util/sms-sender'
 
 @Injectable()
 export class AuthService {
@@ -18,6 +28,7 @@ export class AuthService {
     private userService: UserService,
     @InjectRepository(User)
     private userRepo: Repository<User>,
+    private authcodeService: AuthcodeService,
     private jwtService: JwtService
   ) {}
 
@@ -59,7 +70,62 @@ export class AuthService {
     return await this.getToken(user.id, user.role)
   }
 
-  async login(userDto: LoginUserDto) {}
+  async login({ email, phoneNumber, code, role }: LoginUserDto) {
+    if (!email && !phoneNumber) {
+      throw new BadRequestException('Dont have email or phone number')
+    }
+
+    if (email && phoneNumber) {
+      throw new BadRequestException('Need select email or phone number')
+    }
+
+    let user
+
+    if (email) {
+      user = await this.userService.findByEmail(email)
+    }
+
+    if (phoneNumber) {
+      user = await this.userService.findByPhoneNumber(phoneNumber)
+    }
+
+    if (!user) {
+      user = await this.signup({
+        email,
+        phoneNumber,
+        password: generatePassword(),
+        role,
+      })
+    }
+
+    if (!code) {
+      const generatedCode = generateCode()
+
+      await this.authcodeService.create(user, generatedCode)
+
+      if (email) {
+        sendAuthCodeByEmail(email, generatedCode)
+      }
+
+      if (phoneNumber) {
+        sendAuthCodeBySMS(phoneNumber, generatedCode)
+      }
+
+      return { message: 'code sended' }
+    }
+
+    const authcodes = await this.authcodeService.findByUser(user)
+
+    const verify = await this.authcodeService.checkCodes(authcodes, code)
+
+    if (!verify) {
+      throw new ForbiddenException('Code dont match')
+    }
+
+    await this.authcodeService.removeByUser(user)
+
+    return this.getToken(user.id, user.role)
+  }
 
   async getToken(id: number, role: UserRole) {
     const payload = { sub: id, role: role }

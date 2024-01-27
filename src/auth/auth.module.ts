@@ -6,12 +6,14 @@ import { JwtModule } from '@nestjs/jwt'
 import * as dotenv from 'dotenv'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { User } from 'src/user/entities/user.entity'
+import { AuthcodeModule } from 'src/authcode/authcode.module'
 
 dotenv.config()
 
 @Module({
   imports: [
     UserModule,
+    AuthcodeModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
