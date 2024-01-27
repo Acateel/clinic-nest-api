@@ -6,9 +6,9 @@ import {
   IsString,
   Length,
 } from 'class-validator'
-import { UserRole } from '../entities/user.entity'
+import { UserRole } from 'src/user/entities/user.entity'
 
-export class CreateUserDto {
+export class LoginUserDto {
   @IsOptional()
   @IsEmail()
   public readonly email: string
@@ -18,9 +18,11 @@ export class CreateUserDto {
   @IsMobilePhone()
   public readonly phoneNumber: string
 
+  @IsOptional()
   @IsString()
-  public readonly password: string
+  public readonly code: string
 
+  @IsOptional()
   @IsEnum(UserRole)
   public readonly role: UserRole
 }
