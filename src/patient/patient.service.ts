@@ -25,8 +25,19 @@ export class PatientService {
     return result
   }
 
-  async findAll() {
-    const patients = await this.patientRepo.find()
+  async findAll(filter: any) {
+    const where: any = {}
+
+    if (filter.firstName) {
+      where.firstName = filter.firstName
+    }
+
+    const formatedPhoneNumber = formatPhoneNumber(filter.phoneNumber)
+    if (formatedPhoneNumber) {
+      where.phoneNumber = formatedPhoneNumber
+    }
+
+    const patients = await this.patientRepo.find({ where })
 
     return patients
   }
