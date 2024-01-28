@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { DoctorService } from './doctor.service';
-import { CreateDoctorDto } from './dto/create-doctor.dto';
-import { UpdateDoctorDto } from './dto/update-doctor.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common'
+import { DoctorService } from './doctor.service'
+import { CreateDoctorDto } from './dto/create-doctor.dto'
+import { UpdateDoctorDto } from './dto/update-doctor.dto'
 
 @Controller('doctors')
 export class DoctorController {
@@ -9,26 +18,26 @@ export class DoctorController {
 
   @Post()
   create(@Body() createDoctorDto: CreateDoctorDto) {
-    return this.doctorService.create(createDoctorDto);
+    return this.doctorService.create(createDoctorDto)
   }
 
   @Get()
-  findAll() {
-    return this.doctorService.findAll();
+  findAll(@Query() query: any) {
+    return this.doctorService.findAll(query)
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.doctorService.findOne(+id);
+    return this.doctorService.findOne(+id)
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateDoctorDto: UpdateDoctorDto) {
-    return this.doctorService.update(+id, updateDoctorDto);
+    return this.doctorService.update(+id, updateDoctorDto)
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.doctorService.remove(+id);
+    return this.doctorService.remove(+id)
   }
 }

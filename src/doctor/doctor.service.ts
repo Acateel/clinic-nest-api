@@ -24,13 +24,38 @@ export class DoctorService {
     return result
   }
 
-  async findAll() {
+  async findAll(filter: any) {
     let doctorsQuery = this.doctorRepo
       .createQueryBuilder('doctor')
       .addSelect('count(appointment_entity.id)', 'app_count')
       .leftJoin('doctor.appointments', 'appointment_entity')
       .groupBy('doctor.id')
       .addOrderBy('app_count', 'DESC')
+
+    if (filter.firstName) {
+      doctorsQuery = doctorsQuery.andWhere('doctor.firstName = :firstName', {
+        firstName: filter.firstName,
+      })
+    }
+
+    if (filter.specialty) {
+      doctorsQuery = doctorsQuery.andWhere('doctor.specialty = :specialty', {
+        specialty: filter.specialty,
+      })
+    }
+
+    if (filter.ids) {
+      const parsedIds = JSON.parse(filter.ids)
+      doctorsQuery = doctorsQuery.andWhere('doctor.id IN (:...ids)', {
+        ids: parsedIds,
+      })
+    }
+
+    if (filter.page && filter.pageSize) {
+      doctorsQuery = doctorsQuery
+        .skip((filter.page - 1) * filter.pageSize)
+        .take(filter.pageSize)
+    }
 
     const doctors: any[] = await doctorsQuery.getMany()
 
