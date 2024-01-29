@@ -1,6 +1,7 @@
 import { createTransport } from 'nodemailer'
 import * as dotenv from 'dotenv'
 import { ConfigService } from '@nestjs/config'
+import { transformHTMLTemplate } from './transform-template'
 
 dotenv.config()
 
@@ -16,10 +17,13 @@ const transport = createTransport({
 })
 
 export async function sendAuthCodeByEmail(emailTo: string, code: string) {
+  const pathToTemplate = './src/util/templates/email-send-code.html'
+  const emailHtml = transformHTMLTemplate(pathToTemplate, { code })
+
   const info = await transport.sendMail({
     from: 'Clinic node api',
     to: emailTo,
     subject: 'Authorization by sended code',
-    html: `<p>Sended code: <b>${code}</b> </p>`,
+    html: emailHtml,
   })
 }
