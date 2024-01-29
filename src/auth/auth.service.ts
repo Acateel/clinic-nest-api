@@ -122,7 +122,7 @@ export class AuthService {
       throw new ForbiddenException('Code dont match')
     }
 
-    await this.authcodeService.removeByUser(user)
+    this.authcodeService.removeByUser(user)
 
     return this.getToken(user.id, user.role)
   }
