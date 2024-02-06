@@ -7,6 +7,8 @@ import * as dotenv from 'dotenv'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { User } from 'src/user/entities/user.entity'
 import { AuthcodeModule } from 'src/authcode/authcode.module'
+import { EmailSenderModule } from 'src/email-sender/email-sender.module'
+import { SmsSenderModule } from 'src/sms-sender/sms-sender.module'
 
 dotenv.config()
 
@@ -14,6 +16,8 @@ dotenv.config()
   imports: [
     UserModule,
     AuthcodeModule,
+    EmailSenderModule,
+    SmsSenderModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,

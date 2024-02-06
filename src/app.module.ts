@@ -8,6 +8,8 @@ import { DoctorScheduleModule } from './doctor-schedule/doctor-schedule.module'
 import { AppointmentModule } from './appointment/appointment.module'
 import { AuthcodeModule } from './authcode/authcode.module'
 import { AuthModule } from './auth/auth.module';
+import { EmailSenderModule } from './email-sender/email-sender.module';
+import { SmsSenderModule } from './sms-sender/sms-sender.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { AuthModule } from './auth/auth.module';
     AppointmentModule,
     AuthcodeModule,
     AuthModule,
+    EmailSenderModule,
+    SmsSenderModule,
   ],
   controllers: [],
   providers: [],

@@ -18,8 +18,8 @@ import { JwtService } from '@nestjs/jwt'
 import { generatePassword } from 'src/util/password_generator'
 import { generateCode } from 'src/util/generate-code'
 import { AuthcodeService } from 'src/authcode/authcode.service'
-import { sendAuthCodeByEmail } from 'src/util/email-sender'
-import { sendAuthCodeBySMS } from 'src/util/sms-sender'
+import { EmailSenderService } from 'src/email-sender/email-sender.service'
+import { SmsSenderService } from 'src/sms-sender/sms-sender.service'
 
 @Injectable()
 export class AuthService {
@@ -29,7 +29,9 @@ export class AuthService {
     @InjectRepository(User)
     private userRepo: Repository<User>,
     private authcodeService: AuthcodeService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private emailSenderService: EmailSenderService,
+    private smsSenderService: SmsSenderService
   ) {}
 
   async signup({ email, phoneNumber, password, role }: CreateUserDto) {
@@ -104,11 +106,11 @@ export class AuthService {
       await this.authcodeService.create(user, generatedCode)
 
       if (email) {
-        sendAuthCodeByEmail(email, generatedCode)
+        this.emailSenderService.sendAuthCodeByEmail(email, generatedCode)
       }
 
       if (phoneNumber) {
-        sendAuthCodeBySMS(phoneNumber, generatedCode)
+        this.smsSenderService.sendAuthCodeBySMS(phoneNumber, generatedCode)
       }
 
       return { message: 'code sended' }
