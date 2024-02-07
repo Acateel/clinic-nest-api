@@ -1,5 +1,5 @@
-import { Doctor } from 'src/doctor/entities/doctor.entity'
-import { Patient } from 'src/patient/entities/patient.entity'
+import { Doctor } from 'src/database/entities/doctor.entity'
+import { Patient } from 'src/database/entities/patient.entity'
 import {
   Entity,
   Column,

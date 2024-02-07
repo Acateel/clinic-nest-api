@@ -1,4 +1,4 @@
-import { Authcode } from 'src/authcode/entities/authcode.entity'
+import { Authcode } from 'src/database/entities/authcode.entity'
 import {
   Entity,
   PrimaryGeneratedColumn,

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { MoreThanOrEqual, Repository } from 'typeorm'
-import { Authcode } from './entities/authcode.entity'
+import { Authcode } from '../database/entities/authcode.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { User } from 'src/user/entities/user.entity'
+import { User } from 'src/database/entities/user.entity'
 import { ConfigService } from '@nestjs/config'
 import { compare, hash } from 'bcrypt'
 

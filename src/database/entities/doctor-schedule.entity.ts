@@ -1,4 +1,4 @@
-import { Doctor } from 'src/doctor/entities/doctor.entity'
+import { Doctor } from 'src/database/entities/doctor.entity'
 import {
   Column,
   CreateDateColumn,

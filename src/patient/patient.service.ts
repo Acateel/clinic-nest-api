@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { CreatePatientDto } from './dto/create-patient.dto'
 import { UpdatePatientDto } from './dto/update-patient.dto'
 import { Repository } from 'typeorm'
-import { Patient } from './entities/patient.entity'
+import { Patient } from '../database/entities/patient.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { formatPhoneNumber } from 'src/util/format-phone-number'
 
