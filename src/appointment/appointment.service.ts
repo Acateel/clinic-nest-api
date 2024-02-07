@@ -8,7 +8,7 @@ import {
 import { CreateAppointmentDto } from './dto/create-appointment.dto'
 import { UpdateAppointmentDto } from './dto/update-appointment.dto'
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
-import { Appointment } from './entities/appointment.entity'
+import { Appointment } from '../database/entities/appointment.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DoctorScheduleService } from 'src/doctor-schedule/doctor-schedule.service'
 import { PatientService } from 'src/patient/patient.service'

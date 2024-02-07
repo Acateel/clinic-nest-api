@@ -6,7 +6,7 @@ import {
   IsString,
   Length,
 } from 'class-validator'
-import { UserRole } from '../entities/user.entity'
+import { UserRole } from '../../database/entities/user.entity'
 
 export class CreateUserDto {
   @IsOptional()

@@ -1,4 +1,4 @@
-import { Appointment } from 'src/appointment/entities/appointment.entity'
+import { Appointment } from 'src/database/entities/appointment.entity'
 import {
   Column,
   CreateDateColumn,
