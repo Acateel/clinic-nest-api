@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import { User } from '../database/entities/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
+import { CreateUserDto } from './dto/create-user.dto'
 
 @Injectable()
 export class UserService {
@@ -9,6 +10,19 @@ export class UserService {
     @InjectRepository(User)
     private userRepo: Repository<User>
   ) {}
+
+  async create({ email, phoneNumber, password, role }: CreateUserDto) {
+    const user = new User()
+
+    user.email = email
+    user.phoneNumber = phoneNumber
+    user.password = password
+    user.role = role
+
+    const result = await this.userRepo.save(user)
+
+    return result
+  }
 
   async findAll() {
     const users = await this.userRepo.find()

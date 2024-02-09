@@ -9,9 +9,7 @@ import { SigninUserDto } from './dto/signin-user.dto'
 import { LoginUserDto } from './dto/login-user.dto'
 import { ConfigService } from '@nestjs/config'
 import { UserService } from 'src/user/user.service'
-import { InjectRepository } from '@nestjs/typeorm'
-import { User, UserRole } from 'src/database/entities/user.entity'
-import { Repository } from 'typeorm'
+import { UserRole } from 'src/database/entities/user.entity'
 import { formatPhoneNumber } from 'src/util/format-phone-number'
 import { compare, hash } from 'bcrypt'
 import { JwtService } from '@nestjs/jwt'
@@ -23,16 +21,18 @@ import { SmsSenderService } from 'src/sms-sender/sms-sender.service'
 
 @Injectable()
 export class AuthService {
+  private bcryptSalt: string
+
   constructor(
     private configService: ConfigService,
     private userService: UserService,
-    @InjectRepository(User)
-    private userRepo: Repository<User>,
     private authcodeService: AuthcodeService,
     private jwtService: JwtService,
     private emailSenderService: EmailSenderService,
     private smsSenderService: SmsSenderService
-  ) {}
+  ) {
+    this.bcryptSalt = this.configService.getOrThrow('BCRYPT_SALT')
+  }
 
   async signup({ email, phoneNumber, password, role }: CreateUserDto) {
     if (!email && !phoneNumber) {
@@ -43,14 +43,12 @@ export class AuthService {
 
     await this.userService.checkUserExist(email, phoneNumber)
 
-    const user = new User()
-    user.email = email
-    user.phoneNumber = formatPhoneNumber(phoneNumber)
-    const bcryptSalt = this.configService.getOrThrow('BCRYPT_SALT')
-    user.password = await hash(password, bcryptSalt)
-    user.role = role
-
-    const result = await this.userRepo.save(user)
+    const result = await this.userService.create({
+      email,
+      phoneNumber: formatPhoneNumber(phoneNumber),
+      password: await hash(password, this.bcryptSalt),
+      role,
+    })
 
     return result
   }
