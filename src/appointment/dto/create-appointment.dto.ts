@@ -1,4 +1,5 @@
-import { IsISO8601, IsNumber } from 'class-validator'
+import { Transform } from 'class-transformer'
+import { IsNumber, IsDate } from 'class-validator'
 
 export class CreateAppointmentDto {
   @IsNumber()
@@ -7,9 +8,11 @@ export class CreateAppointmentDto {
   @IsNumber()
   public readonly doctorId: number
 
-  @IsISO8601()
-  public readonly startTime: string
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  public readonly startTime: Date
 
-  @IsISO8601()
-  public readonly endTime: string
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  public readonly endTime: Date
 }
