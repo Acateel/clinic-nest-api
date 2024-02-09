@@ -25,11 +25,12 @@ export class AppointmentService {
     private doctorService: DoctorService
   ) {}
 
-  async create(createAppointmentDto: CreateAppointmentDto) {
-    const startTime = new Date(createAppointmentDto.startTime)
-    const endTime = new Date(createAppointmentDto.endTime)
-    const { doctorId, patientId } = createAppointmentDto
-
+  async create({
+    doctorId,
+    patientId,
+    startTime,
+    endTime,
+  }: CreateAppointmentDto) {
     this.throwIfBadDate(startTime, endTime)
 
     const patient = await this.patientService.findOne(patientId)
@@ -121,11 +122,10 @@ export class AppointmentService {
     return appointment
   }
 
-  async update(id: number, updateAppointmentDto: UpdateAppointmentDto) {
-    const startTime = new Date(updateAppointmentDto.startTime)
-    const endTime = new Date(updateAppointmentDto.endTime)
-    const doctorId = updateAppointmentDto.doctorId
-
+  async update(
+    id: number,
+    { doctorId, startTime, endTime }: UpdateAppointmentDto
+  ) {
     this.throwIfBadDate(startTime, endTime)
 
     const appointment = await this.appointmentRepo.findOneBy({ id })
