@@ -1,9 +1,12 @@
-import { IsISO8601 } from 'class-validator'
+import { Transform } from 'class-transformer'
+import { IsDate } from 'class-validator'
 
 export class CreateDoctorScheduleDto {
-  @IsISO8601()
-  public readonly startTime: string
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  public readonly startTime: Date
 
-  @IsISO8601()
-  public readonly endTime: string
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  public readonly endTime: Date
 }

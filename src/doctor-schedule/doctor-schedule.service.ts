@@ -25,10 +25,8 @@ export class DoctorScheduleService {
 
   async create(
     doctorId: number,
-    createDoctorScheduleDto: CreateDoctorScheduleDto
+    { startTime, endTime }: CreateDoctorScheduleDto
   ) {
-    const startTime = new Date(createDoctorScheduleDto.startTime)
-    const endTime = new Date(createDoctorScheduleDto.endTime)
     this.throwIfBadDate(startTime, endTime)
 
     const doctor = await this.doctorService.findOne(doctorId)
@@ -68,10 +66,8 @@ export class DoctorScheduleService {
   async update(
     id: number,
     doctorId: number,
-    updateDoctorScheduleDto: UpdateDoctorScheduleDto
+    { startTime, endTime }: UpdateDoctorScheduleDto
   ) {
-    const startTime = new Date(updateDoctorScheduleDto.startTime)
-    const endTime = new Date(updateDoctorScheduleDto.endTime)
     this.throwIfBadDate(startTime, endTime)
 
     const doctor = await this.doctorService.findOne(doctorId)
