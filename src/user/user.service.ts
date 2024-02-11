@@ -27,30 +27,31 @@ export class UserService {
   async findAll() {
     const users = await this.userRepo.find()
 
-    const result = users.map((user) => {
-      delete user.password
-      return user
-    })
-
-    return result
+    return users
   }
 
   async findOne(id: number) {
     const user = await this.userRepo.findOneBy({ id })
 
-    delete user.password
-
     return user
   }
 
   async findByEmail(email: string) {
-    const user = await this.userRepo.findOneBy({ email })
+    const user = await this.userRepo
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne()
 
     return user
   }
 
   async findByPhoneNumber(phoneNumber: string) {
-    const user = await this.userRepo.findOneBy({ phoneNumber })
+    const user = await this.userRepo
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.phoneNumber = :phoneNumber', { phoneNumber })
+      .getOne()
 
     return user
   }

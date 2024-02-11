@@ -32,7 +32,7 @@ export class User {
   })
   phoneNumber: string
 
-  @Column()
+  @Column({ select: false })
   password: string
 
   @Column({
