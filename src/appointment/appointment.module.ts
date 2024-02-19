@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { AppointmentService } from './appointment.service'
 import { AppointmentController } from './appointment.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -12,7 +12,7 @@ import { DoctorScheduleModule } from 'src/doctor-schedule/doctor-schedule.module
     TypeOrmModule.forFeature([Appointment]),
     DoctorModule,
     PatientModule,
-    forwardRef(() => DoctorScheduleModule),
+    DoctorScheduleModule,
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService],

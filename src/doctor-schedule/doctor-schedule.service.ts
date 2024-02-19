@@ -1,16 +1,13 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common'
 import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto'
 import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DoctorSchedule } from '../database/entities/doctor-schedule.entity'
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
-import { AppointmentService } from 'src/appointment/appointment.service'
 import { DoctorService } from 'src/doctor/doctor.service'
 
 @Injectable()
@@ -18,8 +15,6 @@ export class DoctorScheduleService {
   constructor(
     @InjectRepository(DoctorSchedule)
     private scheduleRepo: Repository<DoctorSchedule>,
-    @Inject(forwardRef(() => AppointmentService))
-    private appointmentService: AppointmentService,
     private doctorService: DoctorService
   ) {}
 
@@ -115,11 +110,22 @@ export class DoctorScheduleService {
     newStartTime: Date,
     newEndTime: Date
   ) {
-    const appointments = await this.appointmentService.findByDoctorSchedule(
-      oldSchedule.doctor.id,
-      oldSchedule.startTime,
-      oldSchedule.endTime
-    )
+    const schedule = await this.scheduleRepo.findOne({
+      relations: {
+        doctor: { appointments: true },
+      },
+      where: {
+        doctor: {
+          id: oldSchedule.doctor.id,
+          appointments: {
+            startTime: MoreThanOrEqual(oldSchedule.startTime),
+            endTime: LessThanOrEqual(oldSchedule.endTime),
+          },
+        },
+      },
+    })
+
+    const appointments = schedule.doctor.appointments
 
     const newScheduleIncludeAppointments = appointments.every(
       (appointment) =>

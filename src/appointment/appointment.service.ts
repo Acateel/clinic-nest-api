@@ -1,9 +1,7 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common'
 import { CreateAppointmentDto } from './dto/create-appointment.dto'
 import { UpdateAppointmentDto } from './dto/update-appointment.dto'
@@ -19,7 +17,6 @@ export class AppointmentService {
   constructor(
     @InjectRepository(Appointment)
     private appointmentRepo: Repository<Appointment>,
-    @Inject(forwardRef(() => DoctorScheduleService))
     private doctorScheduleService: DoctorScheduleService,
     private patientService: PatientService,
     private doctorService: DoctorService
