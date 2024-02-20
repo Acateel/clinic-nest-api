@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm'
 
 config()
 
-const configService = new ConfigService()
+const configService = new ConfigService<envConfig>()
 
 const path = './src/database/entities'
 

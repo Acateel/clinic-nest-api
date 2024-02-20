@@ -23,7 +23,7 @@ export class AuthService {
   private bcryptSalt: string
 
   constructor(
-    private configService: ConfigService,
+    private configService: ConfigService<envConfig>,
     private userService: UserService,
     private authcodeService: AuthcodeService,
     private jwtService: JwtService,

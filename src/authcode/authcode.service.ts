@@ -11,7 +11,7 @@ export class AuthcodeService {
   constructor(
     @InjectRepository(Authcode)
     private authcodeRepo: Repository<Authcode>,
-    private configService: ConfigService
+    private configService: ConfigService<envConfig>
   ) {}
 
   async create(user: User, code: string) {

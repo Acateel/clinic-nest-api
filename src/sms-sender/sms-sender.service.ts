@@ -7,7 +7,7 @@ export class SmsSenderService {
   private messagingServiceSid: any
   private client: any
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService<envConfig>) {
     const accountSid = this.configService.getOrThrow('TWILIO_ACCOUNT_SID')
     const authToken = this.configService.getOrThrow('TWILIO_AUTH_TOKEN')
     this.messagingServiceSid = this.configService.getOrThrow(

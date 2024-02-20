@@ -7,7 +7,7 @@ import { transformHTMLTemplate } from './util'
 export class EmailSenderService {
   private transport: any
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService<envConfig>) {
     this.transport = createTransport({
       host: configService.getOrThrow('NODEMAILER_HOST'),
       port: +configService.getOrThrow('NODEMAILER_PORT'),

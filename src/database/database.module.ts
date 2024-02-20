@@ -11,7 +11,7 @@ import { User } from './entities/user.entity'
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService<envConfig>) => ({
         type: 'postgres',
         host: configService.getOrThrow('TYPEORM_HOST'),
         port: configService.getOrThrow('TYPEORM_PORT'),
@@ -30,7 +30,7 @@ import { User } from './entities/user.entity'
         ],
         ssl: true,
       }),
-      inject: [ConfigService],
+      inject: [ConfigService<envConfig>],
     }),
   ],
 })

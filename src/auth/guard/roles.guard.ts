@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { Observable } from 'rxjs'
 import { UserRole } from 'src/database/entities/user.entity'
 import { ROLES_KEY } from './roles.decorator'
 import { JwtService } from '@nestjs/jwt'
@@ -19,7 +18,7 @@ export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService<envConfig>
   ) {
     jwtService = this.configService.getOrThrow('JWT_SECRET')
   }
