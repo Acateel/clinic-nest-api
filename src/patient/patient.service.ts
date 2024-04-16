@@ -4,7 +4,7 @@ import { UpdatePatientDto } from './dto/update-patient.dto'
 import { Repository } from 'typeorm'
 import { Patient } from '../database/entities/patient.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { formatPhoneNumber } from 'src/util'
+import { formatPhoneNumber } from 'src/common/format-phone-number'
 
 @Injectable()
 export class PatientService {
