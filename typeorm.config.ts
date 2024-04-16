@@ -1,12 +1,16 @@
 import { ConfigService } from '@nestjs/config'
 import { config } from 'dotenv'
 import { DataSource } from 'typeorm'
+import { Appointment } from './src/database/entities/appointment.entity'
+import { Authcode } from './src/database/entities/authcode.entity'
+import { DoctorSchedule } from './src/database/entities/doctor-schedule.entity'
+import { Doctor } from './src/database/entities/doctor.entity'
+import { Patient } from './src/database/entities/patient.entity'
+import { User } from './src/database/entities/user.entity'
 
 config()
 
 const configService = new ConfigService<envConfig>()
-
-const path = './src/database/entities'
 
 export default new DataSource({
   type: 'postgres',
@@ -16,15 +20,8 @@ export default new DataSource({
   username: configService.getOrThrow('TYPEORM_USERNAME'),
   password: configService.getOrThrow('TYPEORM_PASSWORD'),
   logging: configService.getOrThrow('TYPEORM_LOGGING'),
-  synchronize: configService.getOrThrow('TYPEORM_SYNCHRONIZE'),
+  synchronize: false,
   migrations: ['migrations/**'],
-  entities: [
-    `${path}/appointment.entity`,
-    `${path}/authcode.entity`,
-    `${path}/doctor-schedule.entity`,
-    `${path}/doctor.entity`,
-    `${path}/patient.entity`,
-    `${path}/user.entity`,
-  ],
+  entities: [Appointment, Authcode, DoctorSchedule, Doctor, Patient, User],
   ssl: true,
 })

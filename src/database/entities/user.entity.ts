@@ -1,4 +1,3 @@
-import { Authcode } from 'src/database/entities/authcode.entity'
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,12 +6,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm'
-
-export enum UserRole {
-  Doctor = 'doctor',
-  Patient = 'patient',
-  Admin = 'admin',
-}
+import { Authcode } from './authcode.entity'
+import { UserRole } from '../../common/user-role-enum'
 
 @Entity()
 export class User {

@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
-import { Appointment } from 'src/database/entities/appointment.entity'
-import { DoctorSchedule } from 'src/database/entities/doctor-schedule.entity'
+import { Appointment } from './appointment.entity'
+import { DoctorSchedule } from './doctor-schedule.entity'
 
 @Entity()
 export class Doctor {

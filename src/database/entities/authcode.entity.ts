@@ -1,4 +1,3 @@
-import { User } from 'src/database/entities/user.entity'
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm'
+import { User } from './user.entity'
 
 @Entity()
 export class Authcode {
