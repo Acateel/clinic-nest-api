@@ -5,8 +5,8 @@ import * as twilio from 'twilio'
 
 @Injectable()
 export class SmsSenderService {
-  private messagingServiceSid: any
-  private client: any
+  private messagingServiceSid: string
+  private client: twilio.Twilio
 
   constructor(private configService: ConfigService<envConfig>) {
     const accountSid = this.configService.getOrThrow('TWILIO_ACCOUNT_SID')

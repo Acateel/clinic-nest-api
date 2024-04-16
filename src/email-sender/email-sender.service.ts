@@ -1,20 +1,21 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { createTransport } from 'nodemailer'
+import { Transporter, createTransport } from 'nodemailer'
 import { transformHTMLTemplate } from './util'
 import { envConfig } from 'src/common/env-config'
+import SMTPTransport from 'nodemailer/lib/smtp-transport'
 
 @Injectable()
 export class EmailSenderService {
-  private transport: any
+  private transport: Transporter<SMTPTransport.SentMessageInfo>
 
   constructor(private configService: ConfigService<envConfig>) {
     this.transport = createTransport({
-      host: configService.getOrThrow('NODEMAILER_HOST'),
-      port: +configService.getOrThrow('NODEMAILER_PORT'),
+      host: this.configService.getOrThrow('NODEMAILER_HOST'),
+      port: +this.configService.getOrThrow('NODEMAILER_PORT'),
       auth: {
-        user: configService.getOrThrow('NODEMAILER_USER'),
-        pass: configService.getOrThrow('NODEMAILER_PASS'),
+        user: this.configService.getOrThrow('NODEMAILER_USER'),
+        pass: this.configService.getOrThrow('NODEMAILER_PASS'),
       },
     })
   }
