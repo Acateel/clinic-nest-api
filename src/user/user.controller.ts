@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Delete, UseGuards } from '@nestjs/common'
 import { UserService } from './user.service'
 import { Roles } from 'src/auth/guard/roles.decorator'
-import { UserRole } from 'src/database/entities/user.entity'
+import { UserRole } from 'src/common/user-role-enum'
 import { RolesGuard } from 'src/auth/guard/roles.guard'
 
 @Controller('users')

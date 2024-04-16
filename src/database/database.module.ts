@@ -7,6 +7,7 @@ import { DoctorSchedule } from './entities/doctor-schedule.entity'
 import { Doctor } from './entities/doctor.entity'
 import { Patient } from './entities/patient.entity'
 import { User } from './entities/user.entity'
+import { envConfig } from 'src/common/env-config'
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { User } from './entities/user.entity'
         username: configService.getOrThrow('TYPEORM_USERNAME'),
         password: configService.getOrThrow('TYPEORM_PASSWORD'),
         logging: configService.getOrThrow('TYPEORM_LOGGING'),
-        synchronize: configService.getOrThrow('TYPEORM_SYNCHRONIZE'),
+        synchronize: false,
         entities: [
           Appointment,
           Authcode,

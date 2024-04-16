@@ -1,4 +1,4 @@
-interface envConfig {
+export interface envConfig {
   PORT: number
 
   TYPEORM_HOST: string
@@ -7,7 +7,6 @@ interface envConfig {
   TYPEORM_PORT: number
   TYPEORM_LOGGING: boolean
   TYPEORM_DATABASE: string
-  TYPEORM_SYNCHRONIZE: boolean
 
   BCRYPT_SALT: string
   JWT_SECRET: string

@@ -9,7 +9,7 @@ import { SigninUserDto } from './dto/signin-user.dto'
 import { LoginUserDto } from './dto/login-user.dto'
 import { ConfigService } from '@nestjs/config'
 import { UserService } from 'src/user/user.service'
-import { UserRole } from 'src/database/entities/user.entity'
+import { UserRole } from 'src/common/user-role-enum'
 import { formatPhoneNumber } from 'src/util'
 import { compare, hash } from 'bcrypt'
 import { JwtService } from '@nestjs/jwt'
@@ -17,6 +17,7 @@ import { generateCode, generatePassword } from './util'
 import { AuthcodeService } from 'src/authcode/authcode.service'
 import { EmailSenderService } from 'src/email-sender/email-sender.service'
 import { SmsSenderService } from 'src/sms-sender/sms-sender.service'
+import { envConfig } from 'src/common/env-config'
 
 @Injectable()
 export class AuthService {

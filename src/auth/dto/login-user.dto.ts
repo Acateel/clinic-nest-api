@@ -6,7 +6,7 @@ import {
   IsString,
   Length,
 } from 'class-validator'
-import { UserRole } from 'src/database/entities/user.entity'
+import { UserRole } from 'src/common/user-role-enum'
 
 export class LoginUserDto {
   @IsOptional()

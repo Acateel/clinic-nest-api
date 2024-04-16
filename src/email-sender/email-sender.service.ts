@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { createTransport } from 'nodemailer'
 import { transformHTMLTemplate } from './util'
+import { envConfig } from 'src/common/env-config'
 
 @Injectable()
 export class EmailSenderService {

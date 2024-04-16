@@ -7,6 +7,7 @@ import { DoctorSchedule } from './src/database/entities/doctor-schedule.entity'
 import { Doctor } from './src/database/entities/doctor.entity'
 import { Patient } from './src/database/entities/patient.entity'
 import { User } from './src/database/entities/user.entity'
+import { envConfig } from './src/common/env-config'
 
 config()
 

@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/database/entities/user.entity'
 import { ConfigService } from '@nestjs/config'
 import { compare, hash } from 'bcrypt'
+import { envConfig } from 'src/common/env-config'
 
 @Injectable()
 export class AuthcodeService {
