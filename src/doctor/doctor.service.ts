@@ -57,7 +57,7 @@ export class DoctorService {
         .take(filter.pageSize)
     }
 
-    const doctors: any[] = await doctorsQuery.getMany()
+    const doctors: Doctor[] = await doctorsQuery.getMany()
 
     return doctors
   }
