@@ -5,11 +5,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { UserRole } from 'src/database/entities/user.entity'
+import { UserRole } from 'src/common/user-role-enum'
 import { ROLES_KEY } from './roles.decorator'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
 import { ConfigService } from '@nestjs/config'
+import { envConfig } from 'src/common/env-config'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -20,7 +21,7 @@ export class RolesGuard implements CanActivate {
     private jwtService: JwtService,
     private configService: ConfigService<envConfig>
   ) {
-    jwtService = this.configService.getOrThrow('JWT_SECRET')
+    this.jwtSecret = this.configService.getOrThrow('JWT_SECRET')
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
