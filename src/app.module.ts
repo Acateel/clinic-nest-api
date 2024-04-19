@@ -7,13 +7,14 @@ import { UserModule } from './user/user.module'
 import { DoctorScheduleModule } from './doctor-schedule/doctor-schedule.module'
 import { AppointmentModule } from './appointment/appointment.module'
 import { AuthcodeModule } from './authcode/authcode.module'
-import { AuthModule } from './auth/auth.module';
-import { EmailSenderModule } from './email-sender/email-sender.module';
-import { SmsSenderModule } from './sms-sender/sms-sender.module';
+import { AuthModule } from './auth/auth.module'
+import { EmailSenderModule } from './email-sender/email-sender.module'
+import { SmsSenderModule } from './sms-sender/sms-sender.module'
+import { appConfigFactory } from './common/app-config-factory'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, load: [appConfigFactory] }),
     DatabaseModule,
     DoctorModule,
     PatientModule,
