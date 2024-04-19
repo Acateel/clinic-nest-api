@@ -1,24 +1,14 @@
-import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { Transporter, createTransport } from 'nodemailer'
+import { Inject, Injectable } from '@nestjs/common'
+import { Transporter } from 'nodemailer'
 import { transformHTMLTemplate } from './util'
-import { envConfig } from 'src/common/env-config'
-import SMTPTransport from 'nodemailer/lib/smtp-transport'
+import { SMTP_TRANSPORTER } from 'src/common/constant'
 
 @Injectable()
 export class EmailSenderService {
-  private transport: Transporter<SMTPTransport.SentMessageInfo>
-
-  constructor(private configService: ConfigService<envConfig>) {
-    this.transport = createTransport({
-      host: this.configService.getOrThrow('NODEMAILER_HOST'),
-      port: +this.configService.getOrThrow('NODEMAILER_PORT'),
-      auth: {
-        user: this.configService.getOrThrow('NODEMAILER_USER'),
-        pass: this.configService.getOrThrow('NODEMAILER_PASS'),
-      },
-    })
-  }
+  constructor(
+    @Inject(SMTP_TRANSPORTER)
+    private transport: Transporter
+  ) {}
 
   async sendAuthCodeByEmail(emailTo: string, code: string) {
     const pathToTemplate = './templates/email-send-code.html'

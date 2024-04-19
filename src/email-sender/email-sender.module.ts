@@ -1,10 +1,20 @@
 import { Module } from '@nestjs/common'
 import { EmailSenderService } from './email-sender.service'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigService } from '@nestjs/config'
+import { SMTP_TRANSPORTER } from 'src/common/constant'
+import { AppConfig } from 'src/common/app-config'
+import { createTransport } from 'nodemailer'
 
 @Module({
-  imports: [ConfigModule],
-  providers: [EmailSenderService],
+  providers: [
+    {
+      provide: SMTP_TRANSPORTER,
+      useFactory: (configService: ConfigService<AppConfig, true>) =>
+        createTransport(configService.get('nodemail')),
+      inject: [ConfigService],
+    },
+    EmailSenderService,
+  ],
   exports: [EmailSenderService],
 })
 export class EmailSenderModule {}
