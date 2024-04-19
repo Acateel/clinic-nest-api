@@ -25,12 +25,15 @@ export class DoctorService {
   }
 
   async findAll(filter: any) {
-    let doctorsQuery = this.doctorRepo
-      .createQueryBuilder('doctor')
-      .addSelect('count(appointment_entity.id)', 'app_count')
-      .leftJoin('doctor.appointments', 'appointment_entity')
-      .groupBy('doctor.id')
-      .addOrderBy('app_count', 'DESC')
+    let doctorsQuery = this.doctorRepo.createQueryBuilder('doctor')
+
+    if (filter.sort) {
+      doctorsQuery = doctorsQuery
+        .addSelect('count(appointment_entity.id)', 'app_count')
+        .leftJoin('doctor.appointments', 'appointment_entity')
+        .groupBy('doctor.id')
+        .addOrderBy('app_count', filter.sort == 'ASC' ? 'ASC' : 'DESC')
+    }
 
     if (filter.firstName) {
       doctorsQuery = doctorsQuery.andWhere('doctor.firstName = :firstName', {
