@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { AppointmentService } from './appointment.service';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common'
+import { AppointmentService } from './appointment.service'
+import { CreateAppointmentDto } from './dto/create-appointment.dto'
+import { UpdateAppointmentDto } from './dto/update-appointment.dto'
 
 @Controller('appointments')
 export class AppointmentController {
@@ -9,26 +17,29 @@ export class AppointmentController {
 
   @Post()
   create(@Body() createAppointmentDto: CreateAppointmentDto) {
-    return this.appointmentService.create(createAppointmentDto);
+    return this.appointmentService.create(createAppointmentDto)
   }
 
   @Get()
   findAll() {
-    return this.appointmentService.findAll();
+    return this.appointmentService.findAll()
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.appointmentService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.appointmentService.findOne(id)
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAppointmentDto: UpdateAppointmentDto) {
-    return this.appointmentService.update(+id, updateAppointmentDto);
+  update(
+    @Param('id') id: number,
+    @Body() updateAppointmentDto: UpdateAppointmentDto
+  ) {
+    return this.appointmentService.update(id, updateAppointmentDto)
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.appointmentService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.appointmentService.remove(id)
   }
 }

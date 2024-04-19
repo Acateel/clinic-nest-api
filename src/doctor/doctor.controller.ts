@@ -27,17 +27,17 @@ export class DoctorController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.doctorService.findOne(+id)
+  findOne(@Param('id') id: number) {
+    return this.doctorService.findOne(id)
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDoctorDto: UpdateDoctorDto) {
-    return this.doctorService.update(+id, updateDoctorDto)
+  update(@Param('id') id: number, @Body() updateDoctorDto: UpdateDoctorDto) {
+    return this.doctorService.update(id, updateDoctorDto)
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.doctorService.remove(+id)
+  remove(@Param('id') id: number) {
+    return this.doctorService.remove(id)
   }
 }

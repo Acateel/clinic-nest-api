@@ -29,25 +29,25 @@ export class DoctorScheduleController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.doctorScheduleService.findOne(+id)
+  findOne(@Param('id') id: number) {
+    return this.doctorScheduleService.findOne(id)
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Param('doctorId') doctorId: number,
     @Body() updateDoctorScheduleDto: UpdateDoctorScheduleDto
   ) {
     return this.doctorScheduleService.update(
-      +id,
+      id,
       doctorId,
       updateDoctorScheduleDto
     )
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.doctorScheduleService.remove(+id)
+  remove(@Param('id') id: number) {
+    return this.doctorScheduleService.remove(id)
   }
 }
