@@ -17,6 +17,7 @@ export interface AppConfig {
       user: string
       pass: string
     }
+    templatePath: string
   }
   twilio: {
     accountSid: string

@@ -19,6 +19,7 @@ export const appConfigFactory = (): AppConfig => ({
       user: process.env.NODEMAILER_USER!,
       pass: process.env.NODEMAILER_PASS!,
     },
+    templatePath: process.env.NODEMAILER_TEMPLATE_PATH!,
   },
   twilio: {
     accountSid: process.env.TWILIO_ACCOUNT_SID!,
