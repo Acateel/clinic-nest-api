@@ -1,4 +1,6 @@
+import { Transform } from 'class-transformer'
 import { IsMobilePhone, IsOptional, IsString, Length } from 'class-validator'
+import { formatPhoneNumber } from 'src/common/format-phone-number'
 
 export class CreatePatientDto {
   @IsString()
@@ -10,5 +12,6 @@ export class CreatePatientDto {
   @IsOptional()
   @Length(4, 15)
   @IsMobilePhone()
+  @Transform(({ value }) => formatPhoneNumber(value))
   public readonly phoneNumber?: string
 }
