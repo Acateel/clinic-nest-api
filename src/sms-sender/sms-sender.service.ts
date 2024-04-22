@@ -20,7 +20,7 @@ export class SmsSenderService {
     )
   }
 
-  async sendAuthCodeBySMS(phoneNumber: string, code: string) {
+  async sendAuthCodeBySMS(phoneNumber: string, code: string): Promise<void> {
     await this.client.messages.create({
       body: `Verification code: ${code}`,
       messagingServiceSid: this.messagingServiceSid,

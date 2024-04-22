@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { MoreThanOrEqual, Repository } from 'typeorm'
+import { DeleteResult, MoreThanOrEqual, Repository } from 'typeorm'
 import { Authcode } from '../database/entities/authcode.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/database/entities/user.entity'
@@ -15,7 +15,7 @@ export class AuthcodeService {
     private configService: ConfigService<envConfig>
   ) {}
 
-  async create(user: User, code: string) {
+  async create(user: User, code: string): Promise<Authcode> {
     const authcode = new Authcode()
     authcode.user = user
 
@@ -27,7 +27,7 @@ export class AuthcodeService {
     return result
   }
 
-  async findByUser(user: User) {
+  async findByUser(user: User): Promise<Authcode[]> {
     const delayInMinutes = 15
     const date = new Date()
     date.setMinutes(date.getMinutes() - delayInMinutes)
@@ -47,13 +47,13 @@ export class AuthcodeService {
     return authcodes
   }
 
-  async removeByUser(user: User) {
+  async removeByUser(user: User): Promise<DeleteResult> {
     const result = await this.authcodeRepo.delete({ user })
 
     return result
   }
 
-  async checkCodes(authcodes: Authcode[], code: string) {
+  async checkCodes(authcodes: Authcode[], code: string): Promise<boolean> {
     for (let authcode of authcodes) {
       if (await compare(code, authcode.code)) {
         return true

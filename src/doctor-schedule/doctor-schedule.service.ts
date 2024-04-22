@@ -7,7 +7,12 @@ import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto'
 import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DoctorSchedule } from '../database/entities/doctor-schedule.entity'
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
+import {
+  DeleteResult,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm'
 import { DoctorService } from 'src/doctor/doctor.service'
 
 @Injectable()
@@ -21,7 +26,7 @@ export class DoctorScheduleService {
   async create(
     doctorId: number,
     { startTime, endTime }: CreateDoctorScheduleDto
-  ) {
+  ): Promise<DoctorSchedule> {
     this.throwIfBadDate(startTime, endTime)
 
     const doctor = await this.doctorService.findOne(doctorId)
@@ -38,13 +43,13 @@ export class DoctorScheduleService {
     return result
   }
 
-  async findAll() {
+  async findAll(): Promise<DoctorSchedule[]> {
     const schedules = await this.scheduleRepo.find()
 
     return schedules
   }
 
-  async findByDoctorId(doctorId) {
+  async findByDoctorId(doctorId): Promise<DoctorSchedule[]> {
     const schedules = await this.scheduleRepo.findBy({
       doctor: { id: doctorId },
     })
@@ -52,7 +57,7 @@ export class DoctorScheduleService {
     return schedules
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<DoctorSchedule> {
     const schedule = await this.scheduleRepo.findOneBy({ id })
 
     return schedule
@@ -62,7 +67,7 @@ export class DoctorScheduleService {
     id: number,
     doctorId: number,
     { startTime, endTime }: UpdateDoctorScheduleDto
-  ) {
+  ): Promise<DoctorSchedule> {
     this.throwIfBadDate(startTime, endTime)
 
     const doctor = await this.doctorService.findOne(doctorId)
@@ -99,7 +104,7 @@ export class DoctorScheduleService {
     return result
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     const result = this.scheduleRepo.delete(id)
 
     return result
@@ -109,7 +114,7 @@ export class DoctorScheduleService {
     oldSchedule: DoctorSchedule,
     newStartTime: Date,
     newEndTime: Date
-  ) {
+  ): Promise<boolean> {
     const schedule = await this.scheduleRepo.findOne({
       relations: {
         doctor: { appointments: true },
@@ -136,7 +141,11 @@ export class DoctorScheduleService {
     return newScheduleIncludeAppointments
   }
 
-  async isTimesInSchedule(doctorId: number, startTime: Date, endTime: Date) {
+  async isTimesInSchedule(
+    doctorId: number,
+    startTime: Date,
+    endTime: Date
+  ): Promise<boolean> {
     const schedule = await this.scheduleRepo.findOneBy({
       doctor: {
         id: doctorId,
@@ -150,7 +159,7 @@ export class DoctorScheduleService {
     return false
   }
 
-  throwIfBadDate(startTime: Date, endTime: Date) {
+  throwIfBadDate(startTime: Date, endTime: Date): void {
     if (startTime > endTime) {
       throw new BadRequestException('Start time cannot be after end time')
     }

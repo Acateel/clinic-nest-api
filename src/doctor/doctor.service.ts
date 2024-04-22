@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { CreateDoctorDto } from './dto/create-doctor.dto'
 import { UpdateDoctorDto } from './dto/update-doctor.dto'
-import { Repository } from 'typeorm'
+import { DeleteResult, Repository } from 'typeorm'
 import { Doctor } from '../database/entities/doctor.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 
@@ -12,7 +12,11 @@ export class DoctorService {
     private doctorRepo: Repository<Doctor>
   ) {}
 
-  async create({ firstName, lastName, specialty }: CreateDoctorDto) {
+  async create({
+    firstName,
+    lastName,
+    specialty,
+  }: CreateDoctorDto): Promise<Doctor> {
     const doctor = new Doctor()
 
     doctor.firstName = firstName
@@ -24,7 +28,7 @@ export class DoctorService {
     return result
   }
 
-  async findAll(filter: any) {
+  async findAll(filter: any): Promise<Doctor[]> {
     let doctorsQuery = this.doctorRepo.createQueryBuilder('doctor')
 
     if (filter.sort) {
@@ -65,7 +69,7 @@ export class DoctorService {
     return doctors
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Doctor> {
     const doctor = await this.doctorRepo.findOneBy({ id })
 
     return doctor
@@ -74,7 +78,7 @@ export class DoctorService {
   async update(
     id: number,
     { firstName, lastName, specialty }: UpdateDoctorDto
-  ) {
+  ): Promise<Doctor> {
     const doctor = await this.doctorRepo.findOneBy({ id })
 
     doctor.firstName = firstName
@@ -86,7 +90,7 @@ export class DoctorService {
     return result
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     const result = await this.doctorRepo.delete(id)
 
     return result

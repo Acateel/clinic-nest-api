@@ -14,3 +14,11 @@ export function generatePassword() {
   }
   return retVal
 }
+
+export interface AccessToken {
+  access_token: string
+}
+
+export interface Message {
+  message: string
+}

@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common'
-import { Repository } from 'typeorm'
+import { DeleteResult, Repository } from 'typeorm'
 import { User } from '../database/entities/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -11,7 +11,12 @@ export class UserService {
     private userRepo: Repository<User>
   ) {}
 
-  async create({ email, phoneNumber, password, role }: CreateUserDto) {
+  async create({
+    email,
+    phoneNumber,
+    password,
+    role,
+  }: CreateUserDto): Promise<User> {
     const user = new User()
 
     user.email = email
@@ -21,22 +26,24 @@ export class UserService {
 
     const result = await this.userRepo.save(user)
 
+    delete result.password
+
     return result
   }
 
-  async findAll() {
+  async findAll(): Promise<User[]> {
     const users = await this.userRepo.find()
 
     return users
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<User> {
     const user = await this.userRepo.findOneBy({ id })
 
     return user
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<User> {
     const user = await this.userRepo
       .createQueryBuilder('user')
       .addSelect('user.password')
@@ -46,7 +53,7 @@ export class UserService {
     return user
   }
 
-  async findByPhoneNumber(phoneNumber: string) {
+  async findByPhoneNumber(phoneNumber: string): Promise<User> {
     const user = await this.userRepo
       .createQueryBuilder('user')
       .addSelect('user.password')
@@ -56,13 +63,13 @@ export class UserService {
     return user
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     const result = await this.userRepo.delete(id)
 
     return result
   }
 
-  async checkUserExist(email: string, phoneNumber: string) {
+  async checkUserExist(email: string, phoneNumber: string): Promise<void> {
     if (email) {
       const user = await this.findByEmail(email)
 

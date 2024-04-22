@@ -5,7 +5,13 @@ import {
 } from '@nestjs/common'
 import { CreateAppointmentDto } from './dto/create-appointment.dto'
 import { UpdateAppointmentDto } from './dto/update-appointment.dto'
-import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm'
+import {
+  Between,
+  DeleteResult,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm'
 import { Appointment } from '../database/entities/appointment.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DoctorScheduleService } from 'src/doctor-schedule/doctor-schedule.service'
@@ -27,7 +33,7 @@ export class AppointmentService {
     patientId,
     startTime,
     endTime,
-  }: CreateAppointmentDto) {
+  }: CreateAppointmentDto): Promise<Appointment> {
     this.throwIfBadDate(startTime, endTime)
 
     const patient = await this.patientService.findOne(patientId)
@@ -70,13 +76,17 @@ export class AppointmentService {
     return result
   }
 
-  async findAll() {
+  async findAll(): Promise<Appointment[]> {
     const appointments = await this.appointmentRepo.find()
 
     return appointments
   }
 
-  async findByDoctorSchedule(doctorId: number, startTime: Date, endTime: Date) {
+  async findByDoctorSchedule(
+    doctorId: number,
+    startTime: Date,
+    endTime: Date
+  ): Promise<Appointment[]> {
     const appointmentsBySchedule = await this.appointmentRepo.find({
       where: {
         doctor: {
@@ -90,7 +100,10 @@ export class AppointmentService {
     return appointmentsBySchedule
   }
 
-  async findByDoctorIdAndDay(doctorId: number, date: Date) {
+  async findByDoctorIdAndDay(
+    doctorId: number,
+    date: Date
+  ): Promise<Appointment[]> {
     const startOfDay = new Date(
       `${date.toISOString().split('T')[0]}T00:00:00.000Z`
     )
@@ -113,7 +126,7 @@ export class AppointmentService {
     return appointmentsByDay
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Appointment> {
     const appointment = await this.appointmentRepo.findOneBy({ id })
 
     return appointment
@@ -122,7 +135,7 @@ export class AppointmentService {
   async update(
     id: number,
     { doctorId, startTime, endTime }: UpdateAppointmentDto
-  ) {
+  ): Promise<Appointment> {
     this.throwIfBadDate(startTime, endTime)
 
     const appointment = await this.appointmentRepo.findOneBy({ id })
@@ -161,13 +174,17 @@ export class AppointmentService {
     return result
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     const result = await this.appointmentRepo.delete(id)
 
     return result
   }
 
-  async checkForCreate(doctorId: number, startTime: Date, endTime: Date) {
+  async checkForCreate(
+    doctorId: number,
+    startTime: Date,
+    endTime: Date
+  ): Promise<boolean> {
     const appointmentsByDay = await this.findByDoctorIdAndDay(
       doctorId,
       startTime
@@ -185,7 +202,7 @@ export class AppointmentService {
     doctorId: number,
     startTime: Date,
     endTime: Date
-  ) {
+  ): Promise<boolean> {
     const appointmentsByDay = await this.findByDoctorIdAndDay(
       doctorId,
       startTime
@@ -205,7 +222,7 @@ export class AppointmentService {
     appointmentsByDay: Appointment[],
     startTime: Date,
     endTime: Date
-  ) {
+  ): boolean {
     if (
       appointmentsByDay.length === 0 ||
       endTime <= appointmentsByDay[0].startTime ||
@@ -226,7 +243,7 @@ export class AppointmentService {
     return false
   }
 
-  throwIfBadDate(startTime: Date, endTime: Date) {
+  throwIfBadDate(startTime: Date, endTime: Date): void {
     const now = new Date()
 
     if (startTime < now) {

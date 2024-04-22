@@ -19,7 +19,7 @@ export class EmailSenderService {
     })
   }
 
-  async sendAuthCodeByEmail(emailTo: string, code: string) {
+  async sendAuthCodeByEmail(emailTo: string, code: string): Promise<void> {
     const emailHtml = transformHTMLTemplate(this.templatesPath, { code })
 
     await this.transport.sendMail({

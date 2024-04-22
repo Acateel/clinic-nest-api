@@ -13,11 +13,12 @@ import { UserRole } from 'src/common/user-role-enum'
 import { formatPhoneNumber } from 'src/common/format-phone-number'
 import { compare, hash } from 'bcrypt'
 import { JwtService } from '@nestjs/jwt'
-import { generateCode, generatePassword } from './util'
+import { AccessToken, Message, generateCode, generatePassword } from './util'
 import { AuthcodeService } from 'src/authcode/authcode.service'
 import { EmailSenderService } from 'src/email-sender/email-sender.service'
 import { SmsSenderService } from 'src/sms-sender/sms-sender.service'
 import { envConfig } from 'src/common/env-config'
+import { User } from 'src/database/entities/user.entity'
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,12 @@ export class AuthService {
     this.bcryptSalt = this.configService.getOrThrow('BCRYPT_SALT')
   }
 
-  async signup({ email, phoneNumber, password, role }: CreateUserDto) {
+  async signup({
+    email,
+    phoneNumber,
+    password,
+    role,
+  }: CreateUserDto): Promise<User> {
     if (!email && !phoneNumber) {
       throw new NotFoundException(
         'Credentials incorrect, need email or phone number for signup'
@@ -53,7 +59,7 @@ export class AuthService {
     return result
   }
 
-  async signin({ login, password }: SigninUserDto) {
+  async signin({ login, password }: SigninUserDto): Promise<AccessToken> {
     const user =
       (await this.userService.findByEmail(login)) ??
       (await this.userService.findByPhoneNumber(login))
@@ -70,7 +76,12 @@ export class AuthService {
     return await this.getToken(user.id, user.role)
   }
 
-  async login({ email, phoneNumber, code, role }: LoginUserDto) {
+  async login({
+    email,
+    phoneNumber,
+    code,
+    role,
+  }: LoginUserDto): Promise<AccessToken | Message> {
     if (!email && !phoneNumber) {
       throw new BadRequestException('Dont have email or phone number')
     }
@@ -127,7 +138,7 @@ export class AuthService {
     return this.getToken(user.id, user.role)
   }
 
-  async getToken(id: number, role: UserRole) {
+  async getToken(id: number, role: UserRole): Promise<AccessToken> {
     const payload = { sub: id, role: role }
     return {
       access_token: await this.jwtService.signAsync(payload),
