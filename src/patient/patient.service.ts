@@ -30,18 +30,25 @@ export class PatientService {
   }
 
   async findAll(filter: any): Promise<Patient[]> {
-    const where: any = {}
+    let patientQuery = this.patientRepo.createQueryBuilder('patient')
 
     if (filter.firstName) {
-      where.firstName = filter.firstName
+      patientQuery = patientQuery.andWhere('patient.firstName = :firstName', {
+        firstName: filter.firstName,
+      })
     }
 
     const formatedPhoneNumber = formatPhoneNumber(filter.phoneNumber)
     if (formatedPhoneNumber) {
-      where.phoneNumber = formatedPhoneNumber
+      patientQuery = patientQuery.andWhere(
+        'patient.phoneNumber = :phoneNumber',
+        {
+          phoneNumber: formatedPhoneNumber,
+        }
+      )
     }
 
-    const patients = await this.patientRepo.find({ where })
+    const patients = await patientQuery.getMany()
 
     return patients
   }
