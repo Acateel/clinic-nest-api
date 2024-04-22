@@ -96,9 +96,9 @@ export class DoctorScheduleService {
       )
     }
 
-    schedule.doctor = doctor
-    schedule.startTime = startTime
-    schedule.endTime = endTime
+    schedule.doctor = doctor ?? schedule.doctor
+    schedule.startTime = startTime ?? schedule.startTime
+    schedule.endTime = endTime ?? schedule.endTime
 
     const result = await this.scheduleRepo.save(schedule)
     return result

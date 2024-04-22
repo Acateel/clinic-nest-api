@@ -81,9 +81,9 @@ export class DoctorService {
   ): Promise<Doctor> {
     const doctor = await this.doctorRepo.findOneBy({ id })
 
-    doctor.firstName = firstName
-    doctor.lastName = lastName
-    doctor.specialty = specialty
+    doctor.firstName = firstName ?? doctor.firstName
+    doctor.lastName = lastName ?? doctor.lastName
+    doctor.specialty = specialty ?? doctor.specialty
 
     const result = await this.doctorRepo.save(doctor)
 

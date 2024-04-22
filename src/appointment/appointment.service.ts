@@ -165,9 +165,9 @@ export class AppointmentService {
       throw new BadRequestException('Cannot update appointment in this time')
     }
 
-    appointment.doctor = doctor
-    appointment.startTime = startTime
-    appointment.endTime = endTime
+    appointment.doctor = doctor ?? appointment.doctor
+    appointment.startTime = startTime ?? appointment.startTime
+    appointment.endTime = endTime ?? appointment.endTime
 
     const result = await this.appointmentRepo.save(appointment)
 
