@@ -1,20 +1,23 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { AppConfig } from 'src/common/app-config'
+import { TWILIO_TRANSPORTER } from 'src/common/constant'
 import { envConfig } from 'src/common/env-config'
-import * as twilio from 'twilio'
+import { Twilio } from 'twilio'
 
 @Injectable()
 export class SmsSenderService {
   private messagingServiceSid: string
-  private client: twilio.Twilio
 
-  constructor(private configService: ConfigService<envConfig>) {
-    const accountSid = this.configService.getOrThrow('TWILIO_ACCOUNT_SID')
-    const authToken = this.configService.getOrThrow('TWILIO_AUTH_TOKEN')
+  constructor(
+    @Inject(TWILIO_TRANSPORTER)
+    private client: Twilio,
+    private configService: ConfigService<AppConfig>
+  ) {
     this.messagingServiceSid = this.configService.getOrThrow(
-      'TWILIO_MESSAGING_SERVICE_SID'
+      'twilio.serviceSid',
+      { infer: true }
     )
-    this.client = twilio(accountSid, authToken)
   }
 
   async sendAuthCodeBySMS(phoneNumber: string, code: string) {
