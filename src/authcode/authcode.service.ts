@@ -5,21 +5,21 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/database/entities/user.entity'
 import { ConfigService } from '@nestjs/config'
 import { compare, hash } from 'bcrypt'
-import { envConfig } from 'src/common/env-config'
+import { AppConfig } from 'src/common/app-config'
 
 @Injectable()
 export class AuthcodeService {
   constructor(
     @InjectRepository(Authcode)
     private authcodeRepo: Repository<Authcode>,
-    private configService: ConfigService<envConfig>
+    private configService: ConfigService<AppConfig>
   ) {}
 
   async create(user: User, code: string): Promise<Authcode> {
     const authcode = new Authcode()
     authcode.user = user
 
-    const bctyptSalt = this.configService.getOrThrow('BCRYPT_SALT')
+    const bctyptSalt = this.configService.getOrThrow('bcryptSalt')
     authcode.code = await hash(code, bctyptSalt)
 
     const result = await this.authcodeRepo.save(authcode)

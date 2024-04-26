@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common'
 import { PatientService } from './patient.service'
 import { PatientController } from './patient.controller'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { Patient } from '../database/entities/patient.entity'
+import { DatabaseModule } from 'src/database/database.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Patient])],
+  imports: [DatabaseModule],
   controllers: [PatientController],
   providers: [PatientService],
   exports: [PatientService],
