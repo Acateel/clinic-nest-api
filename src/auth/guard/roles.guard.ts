@@ -10,7 +10,7 @@ import { ROLES_KEY } from './roles.decorator'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
 import { ConfigService } from '@nestjs/config'
-import { envConfig } from 'src/common/env-config'
+import { AppConfig } from 'src/common/app-config'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -19,9 +19,9 @@ export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
-    private configService: ConfigService<envConfig>
+    private configService: ConfigService<AppConfig>
   ) {
-    this.jwtSecret = this.configService.getOrThrow('JWT_SECRET')
+    this.jwtSecret = this.configService.getOrThrow('jwtSecret')
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

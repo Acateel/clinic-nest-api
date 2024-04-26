@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { AppConfig } from 'src/common/app-config'
 import { TWILIO_TRANSPORTER } from 'src/common/constant'
-import { envConfig } from 'src/common/env-config'
 import { Twilio } from 'twilio'
 
 @Injectable()

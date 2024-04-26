@@ -17,22 +17,22 @@ import { AccessToken, Message, generateCode, generatePassword } from './util'
 import { AuthcodeService } from 'src/authcode/authcode.service'
 import { EmailSenderService } from 'src/email-sender/email-sender.service'
 import { SmsSenderService } from 'src/sms-sender/sms-sender.service'
-import { envConfig } from 'src/common/env-config'
 import { User } from 'src/database/entities/user.entity'
+import { AppConfig } from 'src/common/app-config'
 
 @Injectable()
 export class AuthService {
   private bcryptSalt: string
 
   constructor(
-    private configService: ConfigService<envConfig>,
+    private configService: ConfigService<AppConfig>,
     private userService: UserService,
     private authcodeService: AuthcodeService,
     private jwtService: JwtService,
     private emailSenderService: EmailSenderService,
     private smsSenderService: SmsSenderService
   ) {
-    this.bcryptSalt = this.configService.getOrThrow('BCRYPT_SALT')
+    this.bcryptSalt = this.configService.getOrThrow('bcryptSalt')
   }
 
   async signup({
