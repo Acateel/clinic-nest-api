@@ -13,14 +13,15 @@ import {
   MoreThanOrEqual,
   Repository,
 } from 'typeorm'
-import { DoctorService } from 'src/doctor/doctor.service'
+import { Doctor } from 'src/database/entities/doctor.entity'
 
 @Injectable()
 export class DoctorScheduleService {
   constructor(
     @InjectRepository(DoctorSchedule)
     private scheduleRepo: Repository<DoctorSchedule>,
-    private doctorService: DoctorService
+    @InjectRepository(Doctor)
+    private doctorRepo: Repository<Doctor>
   ) {}
 
   async create(
@@ -29,7 +30,7 @@ export class DoctorScheduleService {
   ): Promise<DoctorSchedule> {
     this.throwIfBadDate(startTime, endTime)
 
-    const doctor = await this.doctorService.findOne(doctorId)
+    const doctor = await this.doctorRepo.findOneBy({ id: doctorId })
     if (!doctor) {
       throw new NotFoundException('Doctor with doctorId dont found')
     }
@@ -70,7 +71,7 @@ export class DoctorScheduleService {
   ): Promise<DoctorSchedule> {
     this.throwIfBadDate(startTime, endTime)
 
-    const doctor = await this.doctorService.findOne(doctorId)
+    const doctor = await this.doctorRepo.findOneBy({ id: doctorId })
     if (!doctor) {
       throw new NotFoundException('Doctor with doctorId dont found')
     }

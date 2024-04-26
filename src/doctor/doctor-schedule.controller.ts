@@ -7,9 +7,9 @@ import {
   Param,
   Delete,
 } from '@nestjs/common'
-import { DoctorScheduleService } from './doctor-schedule.service'
-import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto'
-import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto'
+import { DoctorScheduleService } from '../doctor-schedule/doctor-schedule.service'
+import { CreateDoctorScheduleDto } from '../doctor-schedule/dto/create-doctor-schedule.dto'
+import { UpdateDoctorScheduleDto } from '../doctor-schedule/dto/update-doctor-schedule.dto'
 
 @Controller('doctors/:doctorId/schedules')
 export class DoctorScheduleController {
