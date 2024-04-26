@@ -7,32 +7,24 @@ import { DoctorSchedule } from './entities/doctor-schedule.entity'
 import { Doctor } from './entities/doctor.entity'
 import { Patient } from './entities/patient.entity'
 import { User } from './entities/user.entity'
-import { envConfig } from 'src/common/env-config'
+import { AppConfig } from 'src/common/app-config'
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService<envConfig>) => ({
-        type: 'postgres',
-        host: configService.getOrThrow('TYPEORM_HOST'),
-        port: configService.getOrThrow('TYPEORM_PORT'),
-        database: configService.getOrThrow('TYPEORM_DATABASE'),
-        username: configService.getOrThrow('TYPEORM_USERNAME'),
-        password: configService.getOrThrow('TYPEORM_PASSWORD'),
-        logging: configService.getOrThrow('TYPEORM_LOGGING'),
-        synchronize: false,
-        entities: [
-          Appointment,
-          Authcode,
-          DoctorSchedule,
-          Doctor,
-          Patient,
-          User,
-        ],
-        ssl: true,
-      }),
-      inject: [ConfigService<envConfig>],
+      useFactory: (configService: ConfigService<AppConfig>) =>
+        configService.get('database'),
+      inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([
+      Appointment,
+      Authcode,
+      DoctorSchedule,
+      Doctor,
+      Patient,
+      User,
+    ]),
   ],
+  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}

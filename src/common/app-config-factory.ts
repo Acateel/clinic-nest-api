@@ -1,16 +1,26 @@
+import { Appointment } from 'src/database/entities/appointment.entity'
 import { AppConfig } from './app-config'
+import { Authcode } from 'src/database/entities/authcode.entity'
+import { DoctorSchedule } from 'src/database/entities/doctor-schedule.entity'
+import { Doctor } from 'src/database/entities/doctor.entity'
+import { Patient } from 'src/database/entities/patient.entity'
+import { User } from 'src/database/entities/user.entity'
 
 export const appConfigFactory = (): AppConfig => ({
   port: parseInt(process.env.PORT!),
   bcryptSalt: process.env.BCRYPT_SALT!,
   jwtSecret: process.env.JWT_SECRET!,
-  typeorm: {
+  database: {
+    type: 'postgres',
     host: process.env.TYPEORM_HOST!,
-    database: process.env.TYPEORM_DATABASE!,
     port: parseInt(process.env.TYPEORM_PORT!),
+    database: process.env.TYPEORM_DATABASE!,
     username: process.env.TYPEORM_USERNAME!,
     password: process.env.TYPEORM_PASSWORD!,
     logging: Boolean(process.env.TYPEORM_LOGGING!),
+    synchronize: false,
+    entities: [Appointment, Authcode, DoctorSchedule, Doctor, Patient, User],
+    ssl: true,
   },
   nodemail: {
     host: process.env.NODEMAILER_HOST!,
