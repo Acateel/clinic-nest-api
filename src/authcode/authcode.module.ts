@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common'
 import { AuthcodeService } from './authcode.service'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { Authcode } from '../database/entities/authcode.entity'
+import { DatabaseModule } from 'src/database/database.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Authcode])],
+  imports: [DatabaseModule],
   providers: [AuthcodeService],
   exports: [AuthcodeService],
 })
