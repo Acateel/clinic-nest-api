@@ -11,10 +11,12 @@ import { AuthModule } from './auth/auth.module'
 import { EmailSenderModule } from './email-sender/email-sender.module'
 import { SmsSenderModule } from './sms-sender/sms-sender.module'
 import { appConfigFactory } from './common/app-config-factory'
+import { ThrottlerModule } from '@nestjs/throttler'
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [appConfigFactory] }),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
     DatabaseModule,
     DoctorModule,
     PatientModule,
