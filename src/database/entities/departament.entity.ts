@@ -6,11 +6,15 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Tree,
+  TreeChildren,
+  TreeParent,
   UpdateDateColumn,
 } from 'typeorm'
 import { Doctor } from './doctor.entity'
 
 @Entity()
+@Tree('closure-table')
 export class Departament {
   @PrimaryGeneratedColumn()
   id: number
@@ -23,14 +27,10 @@ export class Departament {
   })
   doctors: Doctor[]
 
-  @ManyToOne(() => Departament, (departament) => departament.children, {
-    onDelete: 'CASCADE',
-  })
+  @TreeParent({ onDelete: 'CASCADE' })
   parent: Departament
 
-  @OneToMany(() => Departament, (departament) => departament.parent, {
-    onDelete: 'CASCADE',
-  })
+  @TreeChildren()
   children: Departament[]
 
   @CreateDateColumn({ type: 'timestamptz' })
