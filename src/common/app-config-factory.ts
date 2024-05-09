@@ -18,7 +18,7 @@ export const appConfigFactory = (): AppConfig => ({
     database: process.env.TYPEORM_DATABASE!,
     username: process.env.TYPEORM_USERNAME!,
     password: process.env.TYPEORM_PASSWORD!,
-    logging: Boolean(process.env.TYPEORM_LOGGING!),
+    logging: process.env.TYPEORM_LOGGING! === 'true',
     synchronize: false,
     entities: [
       Appointment,
