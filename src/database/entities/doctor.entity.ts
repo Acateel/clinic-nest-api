@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 import { Appointment } from './appointment.entity'
 import { DoctorSchedule } from './doctor-schedule.entity'
+import { Departament } from './departament.entity'
 
 @Entity()
 export class Doctor {
@@ -34,6 +36,11 @@ export class Doctor {
     onDelete: 'CASCADE',
   })
   schedule: DoctorSchedule[]
+
+  @ManyToMany(() => Departament, (departament) => departament.doctors, {
+    onDelete: 'CASCADE',
+  })
+  departaments: Departament[]
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date

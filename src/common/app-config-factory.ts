@@ -5,6 +5,7 @@ import { DoctorSchedule } from 'src/database/entities/doctor-schedule.entity'
 import { Doctor } from 'src/database/entities/doctor.entity'
 import { Patient } from 'src/database/entities/patient.entity'
 import { User } from 'src/database/entities/user.entity'
+import { Departament } from 'src/database/entities/departament.entity'
 
 export const appConfigFactory = (): AppConfig => ({
   port: parseInt(process.env.PORT!),
@@ -19,7 +20,15 @@ export const appConfigFactory = (): AppConfig => ({
     password: process.env.TYPEORM_PASSWORD!,
     logging: Boolean(process.env.TYPEORM_LOGGING!),
     synchronize: false,
-    entities: [Appointment, Authcode, DoctorSchedule, Doctor, Patient, User],
+    entities: [
+      Appointment,
+      Authcode,
+      DoctorSchedule,
+      Doctor,
+      Patient,
+      User,
+      Departament,
+    ],
     ssl: true,
   },
   nodemail: {
