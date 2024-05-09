@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 import { Appointment } from './appointment.entity'
 import { DoctorSchedule } from './doctor-schedule.entity'
+import { Departament } from './departament.entity'
 
 @Entity()
 export class Doctor {

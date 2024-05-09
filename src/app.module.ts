@@ -12,6 +12,7 @@ import { EmailSenderModule } from './email-sender/email-sender.module'
 import { SmsSenderModule } from './sms-sender/sms-sender.module'
 import { appConfigFactory } from './common/app-config-factory'
 import { ThrottlerModule } from '@nestjs/throttler'
+import { DepartamentModule } from './departament/departament.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ThrottlerModule } from '@nestjs/throttler'
     AuthModule,
     EmailSenderModule,
     SmsSenderModule,
+    DepartamentModule,
   ],
   controllers: [],
   providers: [],

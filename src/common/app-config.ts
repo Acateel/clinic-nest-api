@@ -1,5 +1,6 @@
 import { Appointment } from 'src/database/entities/appointment.entity'
 import { Authcode } from 'src/database/entities/authcode.entity'
+import { Departament } from 'src/database/entities/departament.entity'
 import { DoctorSchedule } from 'src/database/entities/doctor-schedule.entity'
 import { Doctor } from 'src/database/entities/doctor.entity'
 import { Patient } from 'src/database/entities/patient.entity'
@@ -25,6 +26,7 @@ export interface AppConfig {
       | typeof Doctor
       | typeof Patient
       | typeof User
+      | typeof Departament
     )[]
     ssl: boolean
   }

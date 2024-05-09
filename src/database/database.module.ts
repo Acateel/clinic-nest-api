@@ -8,6 +8,7 @@ import { Doctor } from './entities/doctor.entity'
 import { Patient } from './entities/patient.entity'
 import { User } from './entities/user.entity'
 import { AppConfig } from 'src/common/app-config'
+import { Departament } from './entities/departament.entity'
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AppConfig } from 'src/common/app-config'
       Doctor,
       Patient,
       User,
+      Departament,
     ]),
   ],
   exports: [TypeOrmModule],

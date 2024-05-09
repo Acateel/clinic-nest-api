@@ -7,6 +7,7 @@ import { DoctorSchedule } from './src/database/entities/doctor-schedule.entity'
 import { Doctor } from './src/database/entities/doctor.entity'
 import { Patient } from './src/database/entities/patient.entity'
 import { User } from './src/database/entities/user.entity'
+import { Departament } from './src/database/entities/departament.entity'
 
 config()
 
@@ -22,6 +23,14 @@ export default new DataSource({
   logging: configService.getOrThrow('TYPEORM_LOGGING'),
   synchronize: false,
   migrations: ['migrations/**'],
-  entities: [Appointment, Authcode, DoctorSchedule, Doctor, Patient, User],
+  entities: [
+    Appointment,
+    Authcode,
+    DoctorSchedule,
+    Doctor,
+    Patient,
+    User,
+    Departament,
+  ],
   ssl: true,
 })
