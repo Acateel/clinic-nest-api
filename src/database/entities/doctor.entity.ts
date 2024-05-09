@@ -37,11 +37,6 @@ export class Doctor {
   })
   schedule: DoctorSchedule[]
 
-  @ManyToMany(() => Departament, (departament) => departament.doctors, {
-    onDelete: 'CASCADE',
-  })
-  departaments: Departament[]
-
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date
 

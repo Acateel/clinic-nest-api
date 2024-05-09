@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -22,9 +23,10 @@ export class Departament {
   @Column()
   name: string
 
-  @ManyToMany(() => Doctor, (doctor) => doctor.departaments, {
+  @ManyToMany(() => Doctor, {
     onDelete: 'CASCADE',
   })
+  @JoinTable()
   doctors: Doctor[]
 
   @TreeParent({ onDelete: 'CASCADE' })
