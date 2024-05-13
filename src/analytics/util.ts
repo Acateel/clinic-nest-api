@@ -1,46 +1,6 @@
 import { Appointment } from 'src/database/entities/appointment.entity'
 import { Departament } from 'src/database/entities/departament.entity'
 import { Doctor } from 'src/database/entities/doctor.entity'
-import { WrapDepartament } from 'src/departament/util'
-
-export function deleteDates(departament: Departament) {
-  const updatedDepartament = { ...departament }
-
-  delete updatedDepartament.createdAt
-  delete updatedDepartament.updatedAt
-
-  updatedDepartament.doctors = updatedDepartament?.doctors.map((doctor) =>
-    deletingDatesFromDoctors(doctor)
-  )
-
-  updatedDepartament.children = updatedDepartament.children.map((departament) =>
-    deleteDates(departament)
-  )
-
-  return updatedDepartament
-}
-
-function deletingDatesFromDoctors(doctor: Doctor) {
-  const updatedDoctor = { ...doctor }
-
-  delete updatedDoctor.createdAt
-  delete updatedDoctor.updatedAt
-
-  updatedDoctor.appointments = updatedDoctor.appointments.map((appointment) =>
-    deletingDatesFromAppointments(appointment)
-  )
-
-  return updatedDoctor
-}
-
-function deletingDatesFromAppointments(appointment: Appointment) {
-  const updatedAppointment = { ...appointment }
-
-  delete updatedAppointment.createdAt
-  delete updatedAppointment.updatedAt
-
-  return updatedAppointment
-}
 
 export interface TimePeriod {
   startTime: Date
@@ -198,7 +158,11 @@ export function getTimePeriod(year, month, week): TimePeriod {
   }
 }
 
-export function wrapDepartaments(roots: Departament[], week: Week) {
+export function wrapDepartaments(
+  roots: Departament[],
+  week: Week,
+  isIncludeEmptyValues: boolean
+) {
   const wrapDepartament = (departament: Departament) => {
     const haveChildren = departament.children.length !== 0
     const haveDoctors = departament.doctors.length !== 0
@@ -216,19 +180,42 @@ export function wrapDepartaments(roots: Departament[], week: Week) {
     }
 
     if (!haveDoctors) {
+      if (isIncludeEmptyValues) {
+        return { [departament.name]: [] }
+      }
       return null
     }
 
     // have doctors and children empty
 
-    return {
-      [departament.name]: departament.doctors.map((doctor) => ({
+    let wrappedDoctors = []
+
+    departament.doctors.forEach((doctor) => {
+      const appointmentCount = getAppoitmentCountByWeek(
+        doctor.appointments,
+        week
+      )
+
+      if (appointmentCount == 0) {
+        return
+      }
+
+      wrappedDoctors.push({
         doctorId: doctor.id,
         fullName: `${doctor.firstName} ${doctor.lastName}`,
         departamentIds: getDepartamentIds(doctor, roots),
-        appointmentCount: getAppoitmentCountByWeek(doctor.appointments, week),
-      })),
+        appointmentCount,
+      })
+    })
+
+    if (wrappedDoctors.length == 0) {
+      if (isIncludeEmptyValues) {
+        return { [departament.name]: wrappedDoctors }
+      }
+      return null
     }
+
+    return { [departament.name]: wrappedDoctors }
   }
 
   const result = roots.map((departament) => wrapDepartament(departament))
