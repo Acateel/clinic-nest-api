@@ -31,7 +31,7 @@ export class AnalyticsService {
       relations: ['doctors', 'doctors.appointments'],
     })
 
-    const selectedWeeks = getWeeksArray(selectedPeriod)
+    let selectedWeeks = getWeeksArray(selectedPeriod)
 
     const timePeriod = findStartEndDate(departaments)
     const weeks = getWeeksArray(timePeriod)
@@ -39,6 +39,10 @@ export class AnalyticsService {
     const result = {
       curentPeriod: [],
       previosPeriod: [],
+    }
+
+    if (selectedWeeks.length == 0) {
+      selectedWeeks = weeks
     }
 
     selectedWeeks.forEach((week) => {
