@@ -114,18 +114,14 @@ function weekCount(year, month_number) {
 }
 
 export function getMonthWeekFirstDay(year, month, week) {
-  // Set date to 1th of month
   let d = new Date(year, month - 1, 1)
 
   if (week == 1) {
     return d
   }
 
-  // Get day number, set Sunday to 7
   let day = d.getDay() || 7
-  // Set to prior Monday
   d.setDate(d.getDate() - day + 1)
-  // Set to required week
   d.setDate(d.getDate() + 7 * (week - 1))
   return d
 }
@@ -259,4 +255,69 @@ function getDepartamentIds(doctor: Doctor, roots: Departament[]) {
   roots.forEach((root) => getDepIds(root))
 
   return depIds
+}
+
+export function findTopDoctor(
+  departaments: Departament[],
+  selectedPeriod: TimePeriod
+) {
+  const doctorsStatistic = []
+
+  const findTopDoctorInner = (departament: Departament) => {
+    departament.children.forEach((child) => {
+      findTopDoctorInner(child)
+    })
+
+    if (departament.doctors.length !== 0) {
+      departament.doctors.forEach((doctor) => {
+        const isUniqueDoctor = doctorsStatistic.every(
+          (stat) => stat.doctorId !== doctor.id
+        )
+
+        if (!isUniqueDoctor) {
+          return
+        }
+
+        const doctorStat = {
+          doctorId: doctor.id,
+          appointmentCount: 0,
+          allAppoitmentCount: doctor.appointments.length,
+        }
+
+        doctor.appointments.forEach((appointment) => {
+          if (
+            selectedPeriod.startTime <= appointment.startTime &&
+            appointment.startTime <= selectedPeriod.endTime
+          ) {
+            doctorStat.appointmentCount++
+          }
+        })
+
+        doctorsStatistic.push(doctorStat)
+      })
+    }
+  }
+
+  departaments.forEach((departament) => findTopDoctorInner(departament))
+
+  let maxAppotmentCount = 0
+  let topDoctor = null
+
+  doctorsStatistic.forEach((element) => {
+    if (element.appointmentCount > maxAppotmentCount) {
+      topDoctor = element
+      maxAppotmentCount = element.appointmentCount
+    }
+  })
+
+  if (!topDoctor) {
+    return {}
+  }
+
+  return {
+    doctorId: topDoctor.doctorId,
+    appointmentCount: topDoctor.appointmentCount,
+    productivitiGrowth:
+      2 * topDoctor.appointmentCount - topDoctor.allAppoitmentCount,
+  }
 }

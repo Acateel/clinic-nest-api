@@ -5,6 +5,7 @@ import { EntityManager } from 'typeorm'
 import {
   TimePeriod,
   findStartEndDate,
+  findTopDoctor,
   getWeeksArray,
   wrapDepartaments,
 } from './util'
@@ -34,16 +35,20 @@ export class AnalyticsService {
 
     let selectedWeeks = getWeeksArray(selectedPeriod)
 
-    const timePeriod = findStartEndDate(departaments)
-    const weeks = getWeeksArray(timePeriod)
+    const allTimePeriod = findStartEndDate(departaments)
+    const allWeeks = getWeeksArray(allTimePeriod)
 
     const result = {
+      topDoctor: findTopDoctor(
+        departaments,
+        selectedWeeks.length != 0 ? selectedPeriod : allTimePeriod
+      ),
       curentPeriod: [],
       previosPeriod: [],
     }
 
     if (selectedWeeks.length == 0) {
-      selectedWeeks = weeks
+      selectedWeeks = allWeeks
     }
 
     selectedWeeks.forEach((week) => {
@@ -64,7 +69,7 @@ export class AnalyticsService {
 
     result.curentPeriod = Object.assign({}, ...result.curentPeriod)
 
-    weeks.forEach((week) => {
+    allWeeks.forEach((week) => {
       const collitionWeek = selectedWeeks.find(
         (element) =>
           week.year == element.year &&
