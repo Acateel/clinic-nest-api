@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectEntityManager } from '@nestjs/typeorm'
 import { Departament } from 'src/database/entities/departament.entity'
 import { EntityManager } from 'typeorm'
-import { findStartEndDate, getWeeksArray, wrapDepartaments } from './util'
+import {
+  TimePeriod,
+  findStartEndDate,
+  getWeeksArray,
+  wrapDepartaments,
+} from './util'
 
 @Injectable()
 export class AnalyticsService {
@@ -11,7 +16,14 @@ export class AnalyticsService {
     private entityMenager: EntityManager
   ) {}
 
-  async comptuteAppointmentsAnalytics(isIncludeEmptyValues: boolean) {
+  async comptuteAppointmentsAnalytics(
+    isIncludeEmptyValues: boolean,
+    selectedPeriod: TimePeriod
+  ) {
+    if (selectedPeriod.endTime < selectedPeriod.startTime) {
+      throw new BadRequestException('From Date bigger than to Date')
+    }
+
     const departamentTreeManager =
       this.entityMenager.getTreeRepository(Departament)
 
@@ -19,8 +31,9 @@ export class AnalyticsService {
       relations: ['doctors', 'doctors.appointments'],
     })
 
-    const timePeriod = findStartEndDate(departaments)
+    const selectedWeeks = getWeeksArray(selectedPeriod)
 
+    const timePeriod = findStartEndDate(departaments)
     const weeks = getWeeksArray(timePeriod)
 
     const result = {
@@ -28,7 +41,7 @@ export class AnalyticsService {
       previosPeriod: [],
     }
 
-    weeks.forEach((week) => {
+    selectedWeeks.forEach((week) => {
       const key = `${week.year}-${week.month}:${week.weekNumber}`
       const field = wrapDepartaments(departaments, week, isIncludeEmptyValues)
 
@@ -40,6 +53,29 @@ export class AnalyticsService {
     })
 
     result.curentPeriod = Object.assign({}, ...result.curentPeriod)
+
+    weeks.forEach((week) => {
+      const collitionWeek = selectedWeeks.find(
+        (element) =>
+          week.year == element.year &&
+          week.month == element.month &&
+          week.weekNumber == element.weekNumber
+      )
+      if (collitionWeek) {
+        return
+      }
+
+      const key = `${week.year}-${week.month}:${week.weekNumber}`
+
+      const field = wrapDepartaments(departaments, week, isIncludeEmptyValues)
+
+      if (Object.keys(field).length == 0 && !isIncludeEmptyValues) {
+        return
+      }
+
+      result.previosPeriod.push({ [key]: field })
+    })
+
     result.previosPeriod = Object.assign({}, ...result.previosPeriod)
 
     return result
