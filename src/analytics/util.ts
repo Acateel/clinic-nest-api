@@ -313,13 +313,13 @@ export function findTopDoctor(
 
   const prevPeriodCount =
     topDoctor.allAppoitmentCount - topDoctor.appointmentCount
-  const productivitiGrowth = Math.round(
+  const productivityGrowth = Math.round(
     100 - (prevPeriodCount / topDoctor.appointmentCount) * 100
   )
 
   return {
     doctorId: topDoctor.doctorId,
     appointmentCount: topDoctor.appointmentCount,
-    productivitiGrowth: prevPeriodCount == 0 ? null : productivitiGrowth,
+    productivityGrowth: prevPeriodCount == 0 ? null : productivityGrowth,
   }
 }
