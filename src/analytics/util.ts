@@ -47,6 +47,12 @@ export interface TimePeriod {
   endTime: Date
 }
 
+export interface Week {
+  year: number
+  month: number
+  weekNumber: number
+}
+
 export function findStartEndDate(departaments: Departament[]): TimePeriod {
   const dates: TimePeriod = { startTime: new Date(), endTime: new Date() }
 
@@ -80,13 +86,119 @@ export function findStartEndDate(departaments: Departament[]): TimePeriod {
   return dates
 }
 
-export function getWeeksArray(dates: TimePeriod) {
-  let weeks = []
+export function getWeeksArray({ startTime, endTime }: TimePeriod): Week[] {
+  let weeks: Week[] = []
+
+  let initYear = startTime.getUTCFullYear()
+  let initMonth = startTime.getUTCMonth()
+  let initWeek = getWeekOfMonth(startTime)
+
+  const endYear = endTime.getUTCFullYear()
+  const endMonth = endTime.getUTCMonth()
+  const endWeek = getWeekOfMonth(endTime)
+
+  while (initYear <= endYear) {
+    while (initMonth <= 12) {
+      if (initMonth == endMonth && initYear == endYear) {
+        while (initWeek <= endWeek) {
+          weeks.push({
+            year: initYear,
+            month: initMonth + 1,
+            weekNumber: initWeek,
+          })
+          initWeek++
+        }
+        return weeks
+      }
+
+      const countWeeks = weekCount(initYear, initMonth)
+      while (initWeek <= countWeeks) {
+        weeks.push({
+          year: initYear,
+          month: initMonth + 1,
+          weekNumber: initWeek,
+        })
+        initWeek++
+      }
+
+      initMonth++
+      initWeek = 1
+    }
+
+    initYear++
+    initMonth = 1
+  }
 
   return weeks
 }
 
-export function wrapDepartaments(roots: Departament[]) {
+function getWeekOfMonth(date: Date) {
+  var month = date.getMonth(),
+    year = date.getFullYear(),
+    firstWeekday = new Date(year, month, 1).getDay(),
+    lastDateOfMonth = new Date(year, month + 1, 0).getDate(),
+    offsetDate = date.getDate() + firstWeekday - 1,
+    index = 1, // start index at 0 or 1, your choice
+    weeksInMonth = index + Math.ceil((lastDateOfMonth + firstWeekday - 7) / 7),
+    week = index + Math.floor(offsetDate / 7)
+  if (week < 2 + index) return week
+  return week === weeksInMonth ? index + 5 : week
+}
+
+function weekCount(year, month_number) {
+  // month_number is in the range 1..12
+
+  var firstOfMonth = new Date(year, month_number - 1, 1)
+  var lastOfMonth = new Date(year, month_number, 0)
+
+  var used = firstOfMonth.getDay() + lastOfMonth.getDate()
+
+  return Math.ceil(used / 7)
+}
+
+export function getMonthWeekFirstDay(year, month, week) {
+  // Set date to 1th of month
+  let d = new Date(year, month - 1, 1)
+
+  if (week == 1) {
+    return d
+  }
+
+  // Get day number, set Sunday to 7
+  let day = d.getDay() || 7
+  // Set to prior Monday
+  d.setDate(d.getDate() - day + 1)
+  // Set to required week
+  d.setDate(d.getDate() + 7 * (week - 1))
+  return d
+}
+
+export function getMonthWeekLastDay(date: Date) {
+  let d = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+
+  d.setDate(d.getDate() - d.getDay() + 7)
+
+  return d
+}
+
+export function getTimePeriod(year, month, week): TimePeriod {
+  const firstDay = getMonthWeekFirstDay(year, month, week)
+
+  const lastDay = getMonthWeekLastDay(firstDay)
+
+  if (lastDay.getMonth() != firstDay.getMonth()) {
+    lastDay.setDate(0)
+  }
+
+  lastDay.setHours(23, 59, 59, 999)
+
+  return {
+    startTime: firstDay,
+    endTime: lastDay,
+  }
+}
+
+export function wrapDepartaments(roots: Departament[], week: Week) {
   const wrapDepartament = (departament: Departament) => {
     const haveChildren = departament.children.length !== 0
     const haveDoctors = departament.doctors.length !== 0
@@ -111,19 +223,32 @@ export function wrapDepartaments(roots: Departament[]) {
 
     return {
       [departament.name]: departament.doctors.map((doctor) => ({
-        summaryId: departament.id, // ???
         doctorId: doctor.id,
         fullName: `${doctor.firstName} ${doctor.lastName}`,
         departamentIds: getDepartamentIds(doctor, roots),
-        appointmentCount: doctor.appointments.length,
-        weeksNumber: 0, // find later
-        weekMinDate: 'Date', // find by appointments
+        appointmentCount: getAppoitmentCountByWeek(doctor.appointments, week),
       })),
     }
   }
 
   const result = roots.map((departament) => wrapDepartament(departament))
   return Object.assign({}, ...result)
+}
+
+function getAppoitmentCountByWeek(appointments: Appointment[], week: Week) {
+  let count = 0
+  const period = getTimePeriod(week.year, week.month, week.weekNumber)
+
+  appointments.forEach((appointment) => {
+    if (
+      period.startTime <= appointment.startTime &&
+      appointment.startTime <= period.endTime
+    ) {
+      count++
+    }
+  })
+
+  return count
 }
 
 function getDepartamentIds(doctor: Doctor, roots: Departament[]) {
