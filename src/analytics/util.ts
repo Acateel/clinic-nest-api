@@ -160,15 +160,12 @@ export function wrapDepartaments(
   const wrapDepartament = (departament: Departament) => {
     if (
       filterDepartamentIds.length !== 0 &&
-      !filterDepartamentIds.find((id) => id === departament.id)
+      filterDepartamentIds.every((id) => id !== departament.id)
     ) {
       return
     }
 
-    const haveChildren = departament.children.length !== 0
-    const haveDoctors = departament.doctors.length !== 0
-
-    if (haveChildren) {
+    if (departament.children.length !== 0) {
       let wrapedChildren = departament.children.map((child) =>
         wrapDepartament(child)
       )
@@ -180,7 +177,7 @@ export function wrapDepartaments(
       }
     }
 
-    if (!haveDoctors) {
+    if (departament.doctors.length == 0) {
       if (isIncludeEmptyValues) {
         return { [departament.name]: [] }
       }
