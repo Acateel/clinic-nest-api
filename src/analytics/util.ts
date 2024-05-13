@@ -158,9 +158,17 @@ export function getTimePeriod(year, month, week): TimePeriod {
 export function wrapDepartaments(
   roots: Departament[],
   week: Week,
-  isIncludeEmptyValues: boolean
+  isIncludeEmptyValues: boolean,
+  filterDepartamentIds: number[]
 ) {
   const wrapDepartament = (departament: Departament) => {
+    if (
+      filterDepartamentIds.length !== 0 &&
+      !filterDepartamentIds.find((id) => id === departament.id)
+    ) {
+      return
+    }
+
     const haveChildren = departament.children.length !== 0
     const haveDoctors = departament.doctors.length !== 0
 

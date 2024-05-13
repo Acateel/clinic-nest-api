@@ -9,11 +9,13 @@ export class AnalyticsController {
   doctorAppointmentsSummary(
     @Query('isIncludeEmptyValues') isIncludeEmptyValues: boolean,
     @Query('fromDate') fromDate: string,
-    @Query('toDate') toDate: string
+    @Query('toDate') toDate: string,
+    @Query('filterDepartamentIds') filterDepartamentIds: string
   ) {
     return this.analyticsService.comptuteAppointmentsAnalytics(
       isIncludeEmptyValues,
-      { startTime: new Date(fromDate), endTime: new Date(toDate) }
+      { startTime: new Date(fromDate), endTime: new Date(toDate) },
+      filterDepartamentIds ? JSON.parse(filterDepartamentIds) : []
     )
   }
 }

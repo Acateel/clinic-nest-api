@@ -18,7 +18,8 @@ export class AnalyticsService {
 
   async comptuteAppointmentsAnalytics(
     isIncludeEmptyValues: boolean,
-    selectedPeriod: TimePeriod
+    selectedPeriod: TimePeriod,
+    filterDepartamentIds: number[]
   ) {
     if (selectedPeriod.endTime < selectedPeriod.startTime) {
       throw new BadRequestException('From Date bigger than to Date')
@@ -47,7 +48,12 @@ export class AnalyticsService {
 
     selectedWeeks.forEach((week) => {
       const key = `${week.year}-${week.month}:${week.weekNumber}`
-      const field = wrapDepartaments(departaments, week, isIncludeEmptyValues)
+      const field = wrapDepartaments(
+        departaments,
+        week,
+        isIncludeEmptyValues,
+        filterDepartamentIds
+      )
 
       if (Object.keys(field).length == 0 && !isIncludeEmptyValues) {
         return
@@ -71,7 +77,12 @@ export class AnalyticsService {
 
       const key = `${week.year}-${week.month}:${week.weekNumber}`
 
-      const field = wrapDepartaments(departaments, week, isIncludeEmptyValues)
+      const field = wrapDepartaments(
+        departaments,
+        week,
+        isIncludeEmptyValues,
+        filterDepartamentIds
+      )
 
       if (Object.keys(field).length == 0 && !isIncludeEmptyValues) {
         return
