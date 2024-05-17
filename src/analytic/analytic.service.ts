@@ -16,7 +16,7 @@ export class AnalyticService {
     isIncludeEmptyValues: boolean,
     fromDateRaw: string,
     toDateRaw: string,
-    filterDepartamentIds: string
+    filterDepartamentIdsRaw: string
   ) {
     const fromDate = new Date(fromDateRaw)
     const toDate = new Date(toDateRaw)
@@ -24,6 +24,10 @@ export class AnalyticService {
     if (fromDate > toDate) {
       throw new BadRequestException('Invalid date period')
     }
+
+    const filterDepartamentIds: number[] = filterDepartamentIdsRaw
+      ? JSON.parse(filterDepartamentIdsRaw)
+      : []
 
     const summary = await this.entityManager.find(DoctorAppointmentsSummary)
 
@@ -52,13 +56,15 @@ export class AnalyticService {
         departaments,
         summary,
         selectedWeeks,
-        isIncludeEmptyValues
+        isIncludeEmptyValues,
+        filterDepartamentIds
       ),
       previosPeriod: this.wrapDepartamentsByWeeks(
         departaments,
         summary,
         previosWeeks,
-        isIncludeEmptyValues
+        isIncludeEmptyValues,
+        filterDepartamentIds
       ),
     }
   }
@@ -79,14 +85,16 @@ export class AnalyticService {
     departaments: Departament[],
     summary: DoctorAppointmentsSummary[],
     weeks: Week[],
-    isIncludeEmptyValues: boolean
+    isIncludeEmptyValues: boolean,
+    filterDepartamentIds: number[]
   ) {
     const period = weeks.map((week) => {
       const key = `${week.year}-${week.month}:${week.weekNumberInMonth}`
       let value = this.wrapDepartements(
         departaments,
         summary.filter((element) => element.weekNumber == week.weekNumber),
-        isIncludeEmptyValues
+        isIncludeEmptyValues,
+        filterDepartamentIds
       )
 
       if (!this.isWrappedChildrenNotEmpty(value) && !isIncludeEmptyValues) {
@@ -102,7 +110,8 @@ export class AnalyticService {
   wrapDepartements(
     departaments: Departament[],
     summary: DoctorAppointmentsSummary[],
-    isIncludeEmptyValues: boolean
+    isIncludeEmptyValues: boolean,
+    filterDepartamentIds: number[]
   ) {
     const nodes: Departament[] = this.getNodesBFS(departaments)
     let wrappedNodes = {}
@@ -111,11 +120,12 @@ export class AnalyticService {
       if (node.children.length !== 0) {
         const wrapedChilderNodes = this.getWrapedChildrenNodes(
           node.children,
-          wrappedNodes
+          wrappedNodes,
+          filterDepartamentIds
         )
 
         if (
-          Object.keys(wrapedChilderNodes).length !== 0 &&
+          Object.values(wrapedChilderNodes).length !== 0 &&
           this.isWrappedChildrenNotEmpty(wrapedChilderNodes)
         ) {
           wrappedNodes = {
@@ -125,7 +135,10 @@ export class AnalyticService {
           return
         }
 
-        if (isIncludeEmptyValues) {
+        if (
+          Object.values(wrapedChilderNodes).length !== 0 &&
+          isIncludeEmptyValues
+        ) {
           wrappedNodes = {
             ...wrappedNodes,
             [node.name]: wrapedChilderNodes,
@@ -140,7 +153,11 @@ export class AnalyticService {
       }
     })
 
-    return this.getWrapedChildrenNodes(departaments, wrappedNodes)
+    return this.getWrapedChildrenNodes(
+      departaments,
+      wrappedNodes,
+      filterDepartamentIds
+    )
   }
 
   getNodesBFS(departaments: Departament[]) {
@@ -168,10 +185,21 @@ export class AnalyticService {
     return summaryByDepartament ?? {}
   }
 
-  getWrapedChildrenNodes(children: Departament[], wrappedNodes: any) {
+  getWrapedChildrenNodes(
+    children: Departament[],
+    wrappedNodes: any,
+    filterDepartamentIds: number[]
+  ) {
     let childrenWrappedNodes = {}
 
     children.forEach((child) => {
+      if (
+        filterDepartamentIds.length != 0 &&
+        !filterDepartamentIds.includes(child.id)
+      ) {
+        return
+      }
+
       childrenWrappedNodes = {
         ...childrenWrappedNodes,
         [child.name]: wrappedNodes[child.name],
@@ -182,8 +210,12 @@ export class AnalyticService {
   }
 
   isWrappedChildrenNotEmpty(wrapedChildren: any) {
-    return Object.values(wrapedChildren).every(
-      (value) => Object.keys(value).length !== 0
-    )
+    return Object.values(wrapedChildren).every((value) => {
+      if (!value) {
+        return true
+      }
+
+      return Object.keys(value).length !== 0
+    })
   }
 }
