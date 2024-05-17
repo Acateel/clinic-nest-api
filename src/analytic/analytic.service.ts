@@ -5,6 +5,28 @@ import { DoctorAppointmentsSummary } from 'src/database/entities/doctor-appointm
 import { Departament } from 'src/database/entities/departament.entity'
 import { Week, getWeeksArray } from './util'
 
+export interface AppointmentsAnalytics {
+  topDoctor: TopDoctor
+  currentPeriod: AppointmentsAnalyticsNode
+  previosPeriod: AppointmentsAnalyticsNode
+}
+
+export interface TopDoctor {
+  doctorId: number
+  appointmentCount: number
+  productivityGrowth: number
+}
+
+export interface AppointmentsAnalyticsNode {
+  [key: string]: AppointmentsAnalyticsNode | DoctorAppointmentsSummary[]
+}
+
+export interface DoctorSummary {
+  doctorId: number
+  selectedAppointmentCount: number
+  unSelectedAppointmentCount: number
+}
+
 @Injectable()
 export class AnalyticService {
   constructor(
@@ -17,7 +39,7 @@ export class AnalyticService {
     fromDateRaw: string,
     toDateRaw: string,
     filterDepartamentIdsRaw: string
-  ) {
+  ): Promise<AppointmentsAnalytics> {
     const fromDate = new Date(fromDateRaw)
     const toDate = new Date(toDateRaw)
 
@@ -51,7 +73,7 @@ export class AnalyticService {
     })
 
     return {
-      topDoctor: {},
+      topDoctor: this.findTopDoctor(summary, selectedWeeks),
       currentPeriod: this.wrapDepartamentsByWeeks(
         departaments,
         summary,
@@ -69,7 +91,77 @@ export class AnalyticService {
     }
   }
 
-  includeWeek(weeks: Week[], includeWeek: Week) {
+  findTopDoctor(
+    summary: DoctorAppointmentsSummary[],
+    selectedWeeks: Week[]
+  ): TopDoctor {
+    const doctors = this.getUniqueDoctorsSummary(summary)
+
+    summary.forEach((element) => {
+      const isSelected = selectedWeeks.some(
+        (week) => week.weekNumber == element.weekNumber
+      )
+      const findedDoctor = doctors.find(
+        (doctor) => doctor.doctorId == element.doctorId
+      )
+      if (isSelected) {
+        findedDoctor.selectedAppointmentCount += element.appointmentCount
+      } else {
+        findedDoctor.unSelectedAppointmentCount += element.appointmentCount
+      }
+    })
+
+    let appointmentCount = 0
+    let topDoctor: DoctorSummary = null
+
+    doctors.forEach((doctor) => {
+      if (doctor.selectedAppointmentCount > appointmentCount) {
+        appointmentCount = doctor.selectedAppointmentCount
+        topDoctor = doctor
+      }
+    })
+
+    if (!topDoctor) {
+      return null
+    }
+
+    return {
+      doctorId: topDoctor.doctorId,
+      appointmentCount: topDoctor.selectedAppointmentCount,
+      productivityGrowth:
+        topDoctor.unSelectedAppointmentCount == 0
+          ? null
+          : Math.round(
+              100 -
+                (topDoctor.unSelectedAppointmentCount /
+                  topDoctor.selectedAppointmentCount) *
+                  100
+            ),
+    }
+  }
+
+  getUniqueDoctorsSummary(
+    summary: DoctorAppointmentsSummary[]
+  ): DoctorSummary[] {
+    let doctors: DoctorSummary[] = []
+
+    summary.forEach((element) => {
+      const isIncluded = doctors.some(
+        (doctor) => doctor.doctorId == element.doctorId
+      )
+      if (!isIncluded) {
+        doctors.push({
+          doctorId: element.doctorId,
+          selectedAppointmentCount: 0,
+          unSelectedAppointmentCount: 0,
+        })
+      }
+    })
+
+    return doctors
+  }
+
+  includeWeek(weeks: Week[], includeWeek: Week): boolean {
     for (let i = 0; i < weeks.length; i++) {
       if (
         weeks[i].year == includeWeek.year &&
@@ -87,7 +179,7 @@ export class AnalyticService {
     weeks: Week[],
     isIncludeEmptyValues: boolean,
     filterDepartamentIds: number[]
-  ) {
+  ): AppointmentsAnalyticsNode {
     const period = weeks.map((week) => {
       const key = `${week.year}-${week.month}:${week.weekNumberInMonth}`
       let value = this.wrapDepartements(
@@ -112,7 +204,7 @@ export class AnalyticService {
     summary: DoctorAppointmentsSummary[],
     isIncludeEmptyValues: boolean,
     filterDepartamentIds: number[]
-  ) {
+  ): AppointmentsAnalyticsNode {
     const nodes: Departament[] = this.getNodesBFS(departaments)
     let wrappedNodes = {}
 
@@ -160,7 +252,7 @@ export class AnalyticService {
     )
   }
 
-  getNodesBFS(departaments: Departament[]) {
+  getNodesBFS(departaments: Departament[]): Departament[] {
     let nodes: Departament[] = []
 
     departaments.forEach((departament) => nodes.push(departament))
@@ -177,7 +269,7 @@ export class AnalyticService {
   wrapDoctorsSummary(
     departament: Departament,
     summary: DoctorAppointmentsSummary[]
-  ) {
+  ): DoctorAppointmentsSummary[] | {} {
     const summaryByDepartament = summary.filter((element) =>
       element.departamentIds.includes(departament.id)
     )
@@ -189,7 +281,7 @@ export class AnalyticService {
     children: Departament[],
     wrappedNodes: any,
     filterDepartamentIds: number[]
-  ) {
+  ): AppointmentsAnalyticsNode {
     let childrenWrappedNodes = {}
 
     children.forEach((child) => {
@@ -209,7 +301,7 @@ export class AnalyticService {
     return childrenWrappedNodes
   }
 
-  isWrappedChildrenNotEmpty(wrapedChildren: any) {
+  isWrappedChildrenNotEmpty(wrapedChildren: any): boolean {
     return Object.values(wrapedChildren).every((value) => {
       if (!value) {
         return true

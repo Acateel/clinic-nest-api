@@ -58,11 +58,11 @@ function getWeekYear(d: Date) {
   )
 }
 
-function getMonthByWeekNumber(weekNumber: number) {
+function getMonthByWeekNumber(weekNumber: number): number {
   return new Date(1000 * 60 * 60 * 24 * 7 * weekNumber).getMonth()
 }
 
-function getWeekMonth(year: number, weekNumber: number) {
+function getWeekMonth(year: number, weekNumber: number): number {
   const month = getMonthByWeekNumber(weekNumber)
 
   const date = new Date(year, month, 1)
