@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectEntityManager } from '@nestjs/typeorm'
 import { EntityManager } from 'typeorm'
 import { DoctorAppointmentsSummary } from 'src/database/entities/doctor-appointments-summary.entity'
@@ -14,10 +14,17 @@ export class AnalyticService {
 
   async comptuteAppointmentsAnalytics(
     isIncludeEmptyValues: boolean,
-    fromDate: string,
-    toDate: string,
+    fromDateRaw: string,
+    toDateRaw: string,
     filterDepartamentIds: string
   ) {
+    const fromDate = new Date(fromDateRaw)
+    const toDate = new Date(toDateRaw)
+
+    if (fromDate > toDate) {
+      throw new BadRequestException('Invalid date period')
+    }
+
     const summary = await this.entityManager.find(DoctorAppointmentsSummary)
 
     const departaments = await this.entityManager
@@ -29,21 +36,63 @@ export class AnalyticService {
       summary[summary.length - 1].weekMinDate
     )
 
-    const currentPeriod = allWeeks.map((week) => {
-      const key = `${week.year}-${week.month}:${week.weekNumberInMonth}`
-      const value = this.wrapDepartements(
-        departaments,
-        summary.filter((element) => element.weekNumber == week.weekNumber)
-      )
+    let selectedWeeks = getWeeksArray(fromDate, toDate)
 
-      return { [key]: value }
+    if (selectedWeeks.length == 0) {
+      selectedWeeks = allWeeks
+    }
+
+    const previosWeeks = allWeeks.filter((week) => {
+      return !this.includeWeek(selectedWeeks, week)
     })
 
     return {
       topDoctor: {},
-      currentPeriod: Object.assign({}, ...currentPeriod),
-      previosPeriod: {},
+      currentPeriod: this.wrapDepartamentsByWeeks(
+        departaments,
+        summary,
+        selectedWeeks
+      ),
+      previosPeriod: this.wrapDepartamentsByWeeks(
+        departaments,
+        summary,
+        previosWeeks
+      ),
     }
+  }
+
+  includeWeek(weeks: Week[], includeWeek: Week) {
+    for (let i = 0; i < weeks.length; i++) {
+      if (
+        weeks[i].year == includeWeek.year &&
+        weeks[i].weekNumber == includeWeek.weekNumber
+      ) {
+        return true
+      }
+    }
+    return false
+  }
+
+  wrapDepartamentsByWeeks(
+    departaments: Departament[],
+    summary: DoctorAppointmentsSummary[],
+    weeks: Week[]
+  ) {
+    const period = weeks.map((week) => {
+      const key = `${week.year}-${week.month}:${week.weekNumberInMonth}`
+      let value = this.wrapDepartements(
+        departaments,
+        summary.filter((element) => element.weekNumber == week.weekNumber)
+      )
+
+      if (!this.isWrappedChildrenNotEmpty(value)) {
+        return null
+      }
+
+      return { [key]: value }
+    })
+
+    return Object.assign({}, ...period)
   }
 
   wrapDepartements(
