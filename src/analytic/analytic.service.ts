@@ -51,12 +51,14 @@ export class AnalyticService {
       currentPeriod: this.wrapDepartamentsByWeeks(
         departaments,
         summary,
-        selectedWeeks
+        selectedWeeks,
+        isIncludeEmptyValues
       ),
       previosPeriod: this.wrapDepartamentsByWeeks(
         departaments,
         summary,
-        previosWeeks
+        previosWeeks,
+        isIncludeEmptyValues
       ),
     }
   }
@@ -76,16 +78,18 @@ export class AnalyticService {
   wrapDepartamentsByWeeks(
     departaments: Departament[],
     summary: DoctorAppointmentsSummary[],
-    weeks: Week[]
+    weeks: Week[],
+    isIncludeEmptyValues: boolean
   ) {
     const period = weeks.map((week) => {
       const key = `${week.year}-${week.month}:${week.weekNumberInMonth}`
       let value = this.wrapDepartements(
         departaments,
-        summary.filter((element) => element.weekNumber == week.weekNumber)
+        summary.filter((element) => element.weekNumber == week.weekNumber),
+        isIncludeEmptyValues
       )
 
-      if (!this.isWrappedChildrenNotEmpty(value)) {
+      if (!this.isWrappedChildrenNotEmpty(value) && !isIncludeEmptyValues) {
         return null
       }
 
@@ -97,7 +101,8 @@ export class AnalyticService {
 
   wrapDepartements(
     departaments: Departament[],
-    summary: DoctorAppointmentsSummary[]
+    summary: DoctorAppointmentsSummary[],
+    isIncludeEmptyValues: boolean
   ) {
     const nodes: Departament[] = this.getNodesBFS(departaments)
     let wrappedNodes = {}
@@ -113,6 +118,14 @@ export class AnalyticService {
           Object.keys(wrapedChilderNodes).length !== 0 &&
           this.isWrappedChildrenNotEmpty(wrapedChilderNodes)
         ) {
+          wrappedNodes = {
+            ...wrappedNodes,
+            [node.name]: wrapedChilderNodes,
+          }
+          return
+        }
+
+        if (isIncludeEmptyValues) {
           wrappedNodes = {
             ...wrappedNodes,
             [node.name]: wrapedChilderNodes,
