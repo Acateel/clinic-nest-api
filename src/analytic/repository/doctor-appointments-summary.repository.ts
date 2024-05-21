@@ -1,10 +1,19 @@
-import { DataSource, ViewColumn, ViewEntity } from 'typeorm'
-import { Doctor } from './doctor.entity'
-import { Appointment } from './appointment.entity'
+import { Injectable } from '@nestjs/common'
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
+import { DataSource } from 'typeorm'
+import { Doctor } from '../../database/entities/doctor.entity'
+import { Appointment } from '../../database/entities/appointment.entity'
+import { DoctorAppointmentsSummary } from '../entity/doctor-appointments-summary.entity'
 
-@ViewEntity({
-  expression: (dataSource: DataSource) =>
-    dataSource
+@Injectable()
+export class DoctorAppointmentsSummaryRepository {
+  constructor(
+    @InjectDataSource()
+    private dataSource: DataSource
+  ) {}
+
+  public find(): Promise<DoctorAppointmentsSummary[]> {
+    return this.dataSource
       .createQueryBuilder(Doctor, 'doctor')
       .select([
         'ROW_NUMBER() OVER(PARTITION BY 1)::integer as "summaryId"',
@@ -26,27 +35,8 @@ import { Appointment } from './appointment.entity'
         'appointment."doctorId" = doctor.id'
       )
       .groupBy('doctor.id, "weekNumber"')
-      .orderBy('"weekNumber"', 'ASC'),
-})
-export class DoctorAppointmentsSummary {
-  @ViewColumn()
-  summaryId: number
-
-  @ViewColumn()
-  doctorId: number
-
-  @ViewColumn()
-  fullName: string
-
-  @ViewColumn()
-  departamentIds: number[]
-
-  @ViewColumn()
-  appointmentCount: number
-
-  @ViewColumn()
-  weekNumber: number
-
-  @ViewColumn()
-  weekMinDate: Date
+      .orderBy('"weekNumber"', 'ASC')
+      .getRawMany()
+      .then((value) => value as DoctorAppointmentsSummary[])
+  }
 }

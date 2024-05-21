@@ -6,7 +6,6 @@ import { Doctor } from 'src/database/entities/doctor.entity'
 import { Patient } from 'src/database/entities/patient.entity'
 import { User } from 'src/database/entities/user.entity'
 import { Departament } from 'src/database/entities/departament.entity'
-import { DoctorAppointmentsSummary } from 'src/database/entities/doctor-appointments-summary.entity'
 
 export const appConfigFactory = (): AppConfig => ({
   port: parseInt(process.env.PORT!),
@@ -29,7 +28,6 @@ export const appConfigFactory = (): AppConfig => ({
       Patient,
       User,
       Departament,
-      DoctorAppointmentsSummary,
     ],
     ssl: true,
   },

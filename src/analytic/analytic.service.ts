@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { InjectEntityManager } from '@nestjs/typeorm'
 import { EntityManager } from 'typeorm'
-import { DoctorAppointmentsSummary } from 'src/database/entities/doctor-appointments-summary.entity'
+import { DoctorAppointmentsSummary } from 'src/analytic/entity/doctor-appointments-summary.entity'
 import { Departament } from 'src/database/entities/departament.entity'
 import { Week, getWeeksArray } from './util'
+import { DoctorAppointmentsSummaryRepository } from 'src/analytic/repository/doctor-appointments-summary.repository'
 
 export interface AppointmentsAnalytics {
   topDoctor: TopDoctor
@@ -31,7 +32,9 @@ export interface DoctorSummary {
 export class AnalyticService {
   constructor(
     @InjectEntityManager()
-    private entityManager: EntityManager
+    private entityManager: EntityManager,
+    @Inject(DoctorAppointmentsSummaryRepository)
+    private summaryRepo: DoctorAppointmentsSummaryRepository
   ) {}
 
   async comptuteAppointmentsAnalytics(
@@ -51,7 +54,7 @@ export class AnalyticService {
       ? JSON.parse(filterDepartamentIdsRaw)
       : []
 
-    const summary = await this.entityManager.find(DoctorAppointmentsSummary)
+    const summary = await this.summaryRepo.find()
 
     const departaments = await this.entityManager
       .getTreeRepository(Departament)
