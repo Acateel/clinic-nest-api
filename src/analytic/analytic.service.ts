@@ -1,32 +1,16 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { InjectEntityManager } from '@nestjs/typeorm'
 import { EntityManager } from 'typeorm'
-import { DoctorAppointmentsSummary } from 'src/analytic/entity/doctor-appointments-summary.entity'
 import { Departament } from 'src/database/entities/departament.entity'
 import { Week, getWeeksArray } from './util'
-import { AnalyticsRepository } from 'src/analytic/repository/analytics.repository'
-
-export interface AppointmentsAnalytics {
-  topDoctor: TopDoctor
-  currentPeriod: AppointmentsAnalyticsNode
-  previosPeriod: AppointmentsAnalyticsNode
-}
-
-export interface TopDoctor {
-  doctorId: number
-  appointmentCount: number
-  productivityGrowth: number
-}
-
-export interface AppointmentsAnalyticsNode {
-  [key: string]: AppointmentsAnalyticsNode | DoctorAppointmentsSummary[]
-}
-
-export interface DoctorSummary {
-  doctorId: number
-  selectedAppointmentCount: number
-  unSelectedAppointmentCount: number
-}
+import { AnalyticsRepository } from 'src/analytic/analytics.repository'
+import {
+  AppointmentsAnalytics,
+  AppointmentsAnalyticsNode,
+  DoctorAppointmentsSummary,
+  DoctorSummary,
+  TopDoctor,
+} from './interfaces'
 
 @Injectable()
 export class AnalyticService {

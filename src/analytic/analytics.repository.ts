@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
+import { InjectDataSource } from '@nestjs/typeorm'
 import { DataSource } from 'typeorm'
-import { Doctor } from '../../database/entities/doctor.entity'
-import { Appointment } from '../../database/entities/appointment.entity'
-import { DoctorAppointmentsSummary } from '../entity/doctor-appointments-summary.entity'
+import { Doctor } from '../database/entities/doctor.entity'
+import { Appointment } from '../database/entities/appointment.entity'
+import { DoctorAppointmentsSummary } from './interfaces'
 
 @Injectable()
 export class AnalyticsRepository {
