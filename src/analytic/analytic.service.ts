@@ -4,7 +4,7 @@ import { EntityManager } from 'typeorm'
 import { DoctorAppointmentsSummary } from 'src/analytic/entity/doctor-appointments-summary.entity'
 import { Departament } from 'src/database/entities/departament.entity'
 import { Week, getWeeksArray } from './util'
-import { DoctorAppointmentsSummaryRepository } from 'src/analytic/repository/doctor-appointments-summary.repository'
+import { AnalyticsRepository } from 'src/analytic/repository/analytics.repository'
 
 export interface AppointmentsAnalytics {
   topDoctor: TopDoctor
@@ -33,8 +33,8 @@ export class AnalyticService {
   constructor(
     @InjectEntityManager()
     private entityManager: EntityManager,
-    @Inject(DoctorAppointmentsSummaryRepository)
-    private summaryRepo: DoctorAppointmentsSummaryRepository
+    @Inject(AnalyticsRepository)
+    private summaryRepo: AnalyticsRepository
   ) {}
 
   async comptuteAppointmentsAnalytics(

@@ -6,7 +6,7 @@ import { Appointment } from '../../database/entities/appointment.entity'
 import { DoctorAppointmentsSummary } from '../entity/doctor-appointments-summary.entity'
 
 @Injectable()
-export class DoctorAppointmentsSummaryRepository {
+export class AnalyticsRepository {
   constructor(
     @InjectDataSource()
     private dataSource: DataSource
